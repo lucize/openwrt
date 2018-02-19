@@ -55,6 +55,7 @@ define KernelPackage/bluetooth
 	CONFIG_BT_HCIUART_BCM=n \
 	CONFIG_BT_HCIUART_INTEL=n \
 	CONFIG_BT_HCIUART_H4 \
+	CONFIG_BT_HCIUART_NOKIA=n \
 	CONFIG_BT_HIDP \
 	CONFIG_HID_SUPPORT=y
   $(call AddDepends/rfkill)
@@ -285,18 +286,53 @@ endef
 $(eval $(call KernelPackage,gpio-pcf857x))
 
 
-define KernelPackage/lp
+define KernelPackage/ppdev
   SUBMENU:=$(OTHER_MENU)
-  TITLE:=Parallel port and line printer support
+  TITLE:=Parallel port support
   KCONFIG:= \
 	CONFIG_PARPORT \
-	CONFIG_PRINTER \
 	CONFIG_PPDEV
   FILES:= \
 	$(LINUX_DIR)/drivers/parport/parport.ko \
-	$(LINUX_DIR)/drivers/char/lp.ko \
 	$(LINUX_DIR)/drivers/char/ppdev.ko
-  AUTOLOAD:=$(call AutoLoad,50,parport lp ppdev)
+  AUTOLOAD:=$(call AutoLoad,50,parport ppdev)
+endef
+
+$(eval $(call KernelPackage,ppdev))
+
+
+define KernelPackage/parport-pc
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Parallel port interface (PC-style) support
+  DEPENDS:=+kmod-ppdev
+  KCONFIG:= \
+	CONFIG_KS0108=n \
+	CONFIG_PARPORT_PC \
+	CONFIG_PARPORT_1284=y \
+	CONFIG_PARPORT_PC_FIFO=y \
+	CONFIG_PARPORT_PC_PCMCIA=n \
+	CONFIG_PARPORT_PC_SUPERIO=y \
+	CONFIG_PARPORT_SERIAL=n \
+	CONFIG_PARIDE=n \
+	CONFIG_SCSI_IMM=n \
+	CONFIG_SCSI_PPA=n
+  FILES:= \
+	$(LINUX_DIR)/drivers/parport/parport_pc.ko
+  AUTOLOAD:=$(call AutoLoad,51,parport_pc)
+endef
+
+$(eval $(call KernelPackage,parport-pc))
+
+
+define KernelPackage/lp
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Parallel port line printer device support
+  DEPENDS:=+kmod-ppdev
+  KCONFIG:= \
+	CONFIG_PRINTER
+  FILES:= \
+	$(LINUX_DIR)/drivers/char/lp.ko
+  AUTOLOAD:=$(call AutoLoad,52,lp)
 endef
 
 $(eval $(call KernelPackage,lp))
@@ -617,6 +653,22 @@ define KernelPackage/mtdoops/description
 endef
 
 $(eval $(call KernelPackage,mtdoops))
+
+
+define KernelPackage/mtdram
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Test MTD driver using RAM
+  KCONFIG:=CONFIG_MTD_MTDRAM \
+    CONFIG_MTDRAM_TOTAL_SIZE=4096 \
+    CONFIG_MTDRAM_ERASE_SIZE=128
+  FILES:=$(LINUX_DIR)/drivers/mtd/devices/mtdram.ko
+endef
+
+define KernelPackage/mtdram/description
+  Test MTD driver using RAM
+endef
+
+$(eval $(call KernelPackage,mtdram))
 
 
 define KernelPackage/serial-8250

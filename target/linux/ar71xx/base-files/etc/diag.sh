@@ -40,6 +40,7 @@ get_status_led() {
 	db120|\
 	dr342|\
 	dr344|\
+	rut900|\
 	tew-632brp|\
 	tl-wr942n-v1|\
 	wpj344|\
@@ -72,6 +73,23 @@ get_status_led() {
 	tl-wr902ac-v1)
 		status_led="$board:green:power"
 		;;
+	archer-c5|\
+	archer-c7|\
+	tl-mr10u|\
+	tl-mr12u|\
+	tl-mr13u|\
+	tl-wdr4300|\
+	tl-wdr4900-v2|\
+	tl-wr703n|\
+	tl-wr710n|\
+	tl-wr720n-v3|\
+	tl-wr802n-v1|\
+	tl-wr810n|\
+	tl-wr810n-v2|\
+	tl-wr940n-v4|\
+	tl-wr941nd-v6)
+		status_led="tp-link:blue:system"
+		;;
 	ap90q|\
 	cpe830|\
 	cpe870|\
@@ -79,6 +97,10 @@ get_status_led() {
 	gl-inet|\
 	gl-mifi)
 		status_led="$board:green:lan"
+		;;
+	ap91-5g|\
+	n5q)
+		status_led="$board:green:signal4"
 		;;
 	ap96)
 		status_led="$board:green:led2"
@@ -102,9 +124,6 @@ get_status_led() {
 	rocket-m|\
 	rocket-m-xw)
 		status_led="ubnt:green:link4"
-		;;
-	rocket-m-ti)
-		status_led="ubnt:green:link6"
 		;;
 	bxu2000n-2-a1)
 		status_led="bhu:green:status"
@@ -176,7 +195,8 @@ get_status_led() {
 	oolite)
 		status_led="$board:red:system"
 		;;
-	dw33d)
+	dw33d|\
+	r36a)
 		status_led="$board:blue:status"
 		;;
 	eap300v2)
@@ -193,6 +213,9 @@ get_status_led() {
 	el-mini)
 		status_led="easylink:green:system"
 		;;
+	ew-balin)
+		status_led="balin:green:status"
+		;;
 	ew-dorin|\
 	ew-dorin-router)
 		status_led="dorin:green:status"
@@ -204,6 +227,7 @@ get_status_led() {
 	esr1750)
 		status_led="$board:amber:power"
 		;;
+	gl-ar750|\
 	hiveap-121|\
 	nbg6716)
 		status_led="$board:white:power"
@@ -312,6 +336,8 @@ get_status_led() {
 	rb-750-r2|\
 	rb-750p-pbr2|\
 	rb-750up-r2|\
+	rb-911-2hn|\
+	rb-911-5hn|\
 	rb-911g-2hpnd|\
 	rb-911g-5hpacd|\
 	rb-911g-5hpnd|\
@@ -333,9 +359,13 @@ get_status_led() {
 	rb-sxt5n)
 		status_led="rb:green:power"
 		;;
+	re355|\
 	re450|\
 	sc300m)
 		status_led="$board:blue:power"
+		;;
+	rocket-m-ti)
+		status_led="ubnt:green:link6"
 		;;
 	routerstation|\
 	routerstation-pro)
@@ -413,23 +443,6 @@ get_status_led() {
 	tl-wr941nd|\
 	tl-wr941nd-v5)
 		status_led="tp-link:green:system"
-		;;
-	archer-c5|\
-	archer-c7|\
-	tl-mr10u|\
-	tl-mr12u|\
-	tl-mr13u|\
-	tl-wdr4300|\
-	tl-wdr4900-v2|\
-	tl-wr703n|\
-	tl-wr710n|\
-	tl-wr720n-v3|\
-	tl-wr802n-v1|\
-	tl-wr810n|\
-	tl-wr810n-v2|\
-	tl-wr940n-v4|\
-	tl-wr941nd-v6)
-		status_led="tp-link:blue:system"
 		;;
 	tl-wr841n-v9)
 		status_led="tp-link:green:qss"
@@ -521,7 +534,8 @@ set_state() {
 	done)
 		status_led_on
 		case $(board_name) in
-		gl-ar300m)
+		gl-ar300m|\
+		gl-ar750)
 			fw_printenv lc >/dev/null 2>&1 && fw_setenv "bootcount" 0
 			;;
 		qihoo-c301)

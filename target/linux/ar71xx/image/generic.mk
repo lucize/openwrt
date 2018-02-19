@@ -1,5 +1,21 @@
 DEVICE_VARS += DAP_SIGNATURE NETGEAR_BOARD_ID NETGEAR_HW_ID NETGEAR_KERNEL_MAGIC ROOTFS_SIZE SEAMA_SIGNATURE
 
+define Build/alfa-network-rootfs-header
+	mkimage \
+		-A mips -O linux -T filesystem -C lzma -a 0 -e 0 \
+		-n 'RootfsImage' -d $@ $@.new
+	@mv $@.new $@
+endef
+
+define Build/append-md5sum-bin
+	$(STAGING_DIR_HOST)/bin/mkhash md5 $@ | sed 's/../\\\\x&/g' |\
+		xargs echo -ne >> $@
+endef
+
+define Build/append-string
+	echo -n $(1) >> $@
+endef
+
 define Build/mkbuffaloimg
 	$(STAGING_DIR_HOST)/bin/mkbuffaloimg -B $(BOARDNAME) \
 		-R $$(($(subst k, * 1024,$(ROOTFS_SIZE)))) \
@@ -12,7 +28,7 @@ define Build/mkwrggimg
 	$(STAGING_DIR_HOST)/bin/mkwrggimg -b \
 		-i $@ -o $@.imghdr -d /dev/mtdblock/1 \
 		-m $(BOARDNAME) -s $(DAP_SIGNATURE) \
-		-v OpenWrt -B $(REVISION)
+		-v $(VERSION_DIST) -B $(REVISION)
 	mv $@.imghdr $@
 endef
 
@@ -30,7 +46,7 @@ define Build/netgear-squashfs
 		-A mips -O linux -T filesystem -C none \
 		-M $(NETGEAR_KERNEL_MAGIC) \
 		-a 0xbf070000 -e 0xbf070000 \
-		-n 'MIPS OpenWrt Linux-$(LINUX_VERSION)' \
+		-n 'MIPS $(VERSION_DIST) Linux-$(LINUX_VERSION)' \
 		-d $@.squashfs $@
 	rm -rf $@.squashfs $@.fs
 endef
@@ -61,12 +77,23 @@ define Build/seama-seal
 	$(call Build/seama,-s $@.seama $(1))
 endef
 
+define Build/teltonika-fw-fake-checksum
+	# Teltonika U-Boot web based firmware upgrade/recovery routine compares
+	# 16 bytes from md5sum1[16] field in TP-Link v1 header (offset: 76 bytes
+	# from begin of the firmware file) with 16 bytes stored just before
+	# 0xdeadc0de marker. Values are only compared, MD5 sum is not verified.
+	let \
+		offs="$$(stat -c%s $@) - 20"; \
+		dd if=$@ bs=1 count=16 skip=76 |\
+		dd of=$@ bs=1 count=16 seek=$$offs conv=notrunc
+endef
+
 define Build/uImageHiWiFi
 	# Field ih_name needs to start with "tw150v1"
 	mkimage -A $(LINUX_KARCH) \
 		-O linux -T kernel \
 		-C $(1) -a $(KERNEL_LOADADDR) -e $(if $(KERNEL_ENTRY),$(KERNEL_ENTRY),$(KERNEL_LOADADDR)) \
-		-n 'tw150v1 $(call toupper,$(LINUX_KARCH)) OpenWrt Linux-$(LINUX_VERSION)' -d $@ $@.new
+		-n 'tw150v1 $(call toupper,$(LINUX_KARCH)) $(VERSION_DIST) Linux-$(LINUX_VERSION)' -d $@ $@.new
 	@mv $@.new $@
 endef
 
@@ -104,6 +131,22 @@ define Device/ap90q
   MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env),16000k(firmware),64k(art)ro
 endef
 TARGET_DEVICES += ap90q
+
+define Device/ap91-5g
+  DEVICE_TITLE := ALFA Network AP91-5G
+  DEVICE_PACKAGES := rssileds -swconfig
+  BOARDNAME := AP91-5G
+  IMAGE_SIZE := 7744k
+  KERNEL_SIZE := 1600k
+  ROOTFS_SIZE := 6144k
+  MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env),6144k(rootfs),1600k(kernel),64k(config)ro,64k(art)ro,7744k@0x50000(firmware)
+  IMAGES := sysupgrade.bin factory.bin
+  IMAGE/factory.bin := append-rootfs | pad-rootfs |\
+	alfa-network-rootfs-header | append-kernel | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs |\
+	pad-to $$$$(ROOTFS_SIZE) | append-kernel | check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += ap91-5g
 
 define Device/arduino-yun
   DEVICE_TITLE := Arduino Yun
@@ -159,6 +202,15 @@ define Device/cf-e355ac
   MTDPARTS := spi0.0:64k(u-boot)ro,64k(art)ro,16192k(firmware),64k(art-backup)ro
 endef
 TARGET_DEVICES += cf-e355ac
+
+define Device/cf-e375ac
+  DEVICE_TITLE := COMFAST CF-E375AC
+  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+  BOARDNAME := CF-E375AC
+  IMAGE_SIZE := 16000k
+  MTDPARTS := spi0.0:256k(u-boot)ro,64k(art)ro,16000k(firmware),64k(art-backup)ro
+endef
+TARGET_DEVICES += cf-e375ac
 
 define Device/cf-e380ac-v1
   DEVICE_TITLE := COMFAST CF-E380AC v1
@@ -229,6 +281,15 @@ define Device/dragino2
 endef
 TARGET_DEVICES += dragino2
 
+define Device/ew-balin
+  DEVICE_TITLE := Embedded Wireless Balin Platform
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb-chipidea 
+  BOARDNAME = EW-BALIN
+  IMAGE_SIZE = 16000k
+  MTDPARTS = spi0.0:256k(u-boot)ro,64k(u-boot-env),16000k(firmware),64k(art)ro
+endef
+TARGET_DEVICES += ew-balin
+
 define Device/ew-dorin
   DEVICE_TITLE := Embedded Wireless Dorin Platform
   DEVICE_PACKAGES := kmod-usb-core kmod-usb-chipidea
@@ -248,6 +309,19 @@ define Device/ew-dorin-router
   MTDPARTS = spi0.0:256k(u-boot)ro,64k(u-boot-env),16000k(firmware),64k(art)ro
 endef
 TARGET_DEVICES += ew-dorin-router
+
+define Device/rme-eg200
+  DEVICE_TITLE := eTactica EG-200
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-ledtrig-oneshot \
+	kmod-usb-serial kmod-usb-serial-ftdi \
+	kmod-usb-storage \
+	kmod-fs-ext4
+  BOARDNAME = RME-EG200
+  IMAGE_SIZE = 16000k
+  CONSOLE = ttyATH0,115200
+  MTDPARTS = spi0.0:256k(u-boot)ro,64k(u-boot-env)ro,16000k(firmware),64k(art)ro
+endef
+TARGET_DEVICES += rme-eg200
 
 define Device/weio
   DEVICE_TITLE := WeIO
@@ -286,6 +360,19 @@ define Device/gl-ar300m
   MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env),16000k(firmware),64k(art)ro
 endef
 TARGET_DEVICES += gl-ar300m
+
+define Device/gl-ar750
+  DEVICE_TITLE := GL.iNet GL-AR750
+  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9887 kmod-usb-core \
+	kmod-usb2 kmod-usb-storage
+  BOARDNAME := GL-AR750
+  SUPPORTED_DEVICES := gl-ar750
+  IMAGE_SIZE := 16000k
+  MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env),64k(art)ro,-(firmware)
+  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += gl-ar750
 
 define Device/gl-domino
   DEVICE_TITLE := GL.iNet Domino Pi
@@ -588,6 +675,18 @@ define Device/jwap230
 endef
 TARGET_DEVICES += jwap230
 
+define Device/r36a
+  DEVICE_TITLE := ALFA Network R36A
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ledtrig-usbport -swconfig
+  BOARDNAME := R36A
+  SUPPORTED_DEVICES := r36a
+  IMAGE_SIZE := 15872k
+  MTDPARTS := spi0.0:384k(u-boot)ro,64k(u-boot-env),64k(art)ro,-(firmware)
+  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += r36a
+
 define Device/r602n
   DEVICE_TITLE := P&W R602N
   DEVICE_PACKAGES := kmod-usb-core kmod-usb2
@@ -596,6 +695,28 @@ define Device/r602n
   MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env)ro,16000k(firmware),64k(art)ro
 endef
 TARGET_DEVICES += r602n
+
+define Device/rut900
+  DEVICE_TITLE := Teltonika RUT900
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 -uboot-envtools
+  BOARDNAME := RUT900
+  SUPPORTED_DEVICES := rut900
+  IMAGE_SIZE := 15552k
+  MTDPARTS := spi0.0:128k(u-boot)ro,64k(config)ro,64k(art)ro,15552k(firmware),576k(event-log)ro
+  TPLINK_HWID := 0x35000001
+  TPLINK_HWREV := 0x1
+  TPLINK_HEADER_VERSION := 1
+  KERNEL := kernel-bin | patch-cmdline | lzma | tplink-v1-header
+  KERNEL_INITRAMFS := kernel-bin | patch-cmdline | lzma | uImage lzma
+  IMAGES := sysupgrade.bin factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs |\
+	pad-rootfs | teltonika-fw-fake-checksum | append-string master |\
+	append-md5sum-bin | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) |\
+	append-rootfs | pad-rootfs | append-metadata |\
+	check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += rut900
 
 define Device/mc-mac1200r
   $(Device/tplink-8mlzma)
@@ -733,6 +854,18 @@ define Device/oolite
   CONSOLE := ttyATH0,115200
 endef
 TARGET_DEVICES += oolite
+
+define Device/n5q
+  DEVICE_TITLE := ALFA Network N5Q
+  DEVICE_PACKAGES := rssileds -swconfig
+  BOARDNAME := N5Q
+  SUPPORTED_DEVICES := n5q
+  IMAGE_SIZE := 15872k
+  MTDPARTS := spi0.0:384k(u-boot)ro,64k(u-boot-env),64k(art)ro,-(firmware)
+  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += n5q
 
 define Device/NBG6616
   DEVICE_TITLE := ZyXEL NBG6616
@@ -890,6 +1023,16 @@ define Device/bhr-4grv2
   IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-rootfs | pad-rootfs | mkbuffaloimg
 endef
 TARGET_DEVICES += bhr-4grv2
+
+define Device/wlr8100
+  DEVICE_TITLE := Sitecom WLR-8100
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ledtrig-usbport kmod-usb3 \
+	kmod-ath10k ath10k-firmware-qca988x
+  BOARDNAME := WLR8100
+  IMAGE_SIZE := 15424k
+  MTDPARTS := spi0.0:192k(u-boot)ro,64k(u-boot-env)ro,15424k(firmware),256k(manufacture)ro,64k(backup)ro,320k(storage)ro,64k(art)ro
+endef
+TARGET_DEVICES += wlr8100
 
 define Device/wpj-16m
   DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ledtrig-usbport

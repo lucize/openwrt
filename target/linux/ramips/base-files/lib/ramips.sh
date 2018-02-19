@@ -85,9 +85,6 @@ ramips_board_detect() {
 	*"C108")
 		name="c108"
 		;;
-	*"C20")
-		name="c20"
-		;;
 	*"C20i")
 		name="c20i"
 		;;
@@ -114,6 +111,9 @@ ramips_board_detect() {
 		;;
 	*"DAP-1350")
 		name="dap-1350"
+		;;
+	*"DAP-1522 A1")
+		name="dap-1522-a1"
 		;;
 	*"DB-WRT01")
 		name="db-wrt01"
@@ -207,6 +207,9 @@ ramips_board_detect() {
 		;;
 	*"GB-PC1")
 		name="gb-pc1"
+		;;
+	*"GB-PC2")
+		name="gb-pc2"
 		;;
 	*"GL-MT300A")
 		name="gl-mt300a"
@@ -579,9 +582,6 @@ ramips_board_detect() {
 		;;
 	*"WHR-G300N")
 		name="whr-g300n"
-		;;
-	*"Widora-NEO")
-		name="widora-neo"
 		;;
 	*"WiTi")
                 name="witi"
