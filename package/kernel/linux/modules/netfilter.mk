@@ -140,6 +140,23 @@ endef
 $(eval $(call KernelPackage,nf-nat6))
 
 
+define KernelPackage/nf-flow
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter flowtable support
+  KCONFIG:= \
+	CONFIG_NETFILTER_INGRESS=y \
+	CONFIG_NF_FLOW_TABLE \
+	CONFIG_NF_FLOW_TABLE_HW
+  DEPENDS:=+kmod-nf-conntrack @!LINUX_3_18 @!LINUX_4_4 @!LINUX_4_9
+  FILES:= \
+	$(LINUX_DIR)/net/netfilter/nf_flow_table.ko \
+	$(LINUX_DIR)/net/netfilter/nf_flow_table_hw.ko
+  AUTOLOAD:=$(call AutoProbe,nf_flow_table nf_flow_table_hw)
+endef
+
+$(eval $(call KernelPackage,nf-flow))
+
+
 define AddDepends/ipt
   SUBMENU:=$(NF_MENU)
   DEPENDS+= +kmod-ipt-core $(1)
@@ -218,6 +235,17 @@ define KernelPackage/ipt-filter/description
 endef
 
 $(eval $(call KernelPackage,ipt-filter))
+
+
+define KernelPackage/ipt-offload
+  TITLE:=Netfilter routing/NAT offload support
+  KCONFIG:=CONFIG_NETFILTER_XT_TARGET_FLOWOFFLOAD
+  FILES:=$(foreach mod,$(IPT_FLOW-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_FLOW-m)))
+  $(call AddDepends/ipt,+kmod-nf-flow)
+endef
+
+$(eval $(call KernelPackage,ipt-offload))
 
 
 define KernelPackage/ipt-ipopt
@@ -658,7 +686,7 @@ define KernelPackage/ipt-extra
   KCONFIG:=$(KCONFIG_IPT_EXTRA)
   FILES:=$(foreach mod,$(IPT_EXTRA-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_EXTRA-m)))
-  $(call AddDepends/ipt,+kmod-br-netfilter)
+  $(call AddDepends/ipt)
 endef
 
 define KernelPackage/ipt-extra/description
@@ -666,12 +694,26 @@ define KernelPackage/ipt-extra/description
  Includes:
  - addrtype
  - owner
- - physdev (if bridge support was enabled in kernel)
  - pkttype
  - quota
 endef
 
 $(eval $(call KernelPackage,ipt-extra))
+
+
+define KernelPackage/ipt-physdev
+  TITLE:=physdev module
+  KCONFIG:=$(KCONFIG_IPT_PHYSDEV)
+  FILES:=$(foreach mod,$(IPT_PHYSDEV-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_PHYSDEV-m)))
+  $(call AddDepends/ipt,+kmod-br-netfilter)
+endef
+
+define KernelPackage/ipt-physdev/description
+ The iptables physdev kernel module
+endef
+
+$(eval $(call KernelPackage,ipt-physdev))
 
 
 define KernelPackage/ip6tables
@@ -726,7 +768,6 @@ $(eval $(call KernelPackage,arptables))
 define KernelPackage/br-netfilter
   SUBMENU:=$(NF_MENU)
   TITLE:=Bridge netfilter support modules
-  HIDDEN:=1
   DEPENDS:=+kmod-ipt-core
   FILES:=$(LINUX_DIR)/net/bridge/br_netfilter.ko
   KCONFIG:=CONFIG_BRIDGE_NETFILTER
@@ -739,7 +780,7 @@ $(eval $(call KernelPackage,br-netfilter))
 define KernelPackage/ebtables
   SUBMENU:=$(NF_MENU)
   TITLE:=Bridge firewalling modules
-  DEPENDS:=+kmod-ipt-core +kmod-br-netfilter
+  DEPENDS:=+kmod-ipt-core
   FILES:=$(foreach mod,$(EBTABLES-m),$(LINUX_DIR)/net/$(mod).ko)
   KCONFIG:=$(KCONFIG_EBTABLES)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(EBTABLES-m)))
@@ -756,7 +797,7 @@ $(eval $(call KernelPackage,ebtables))
 
 define AddDepends/ebtables
   SUBMENU:=$(NF_MENU)
-  DEPENDS+=kmod-ebtables $(1)
+  DEPENDS+= +kmod-ebtables $(1)
 endef
 
 
@@ -968,6 +1009,26 @@ define KernelPackage/nft-nat
 endef
 
 $(eval $(call KernelPackage,nft-nat))
+
+
+define KernelPackage/nft-offload
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter nf_tables routing/NAT offload support
+  DEPENDS:=+kmod-nf-flow +kmod-nft-nat
+  KCONFIG:= \
+	CONFIG_NF_FLOW_TABLE_INET \
+	CONFIG_NF_FLOW_TABLE_IPV4 \
+	CONFIG_NF_FLOW_TABLE_IPV6 \
+	CONFIG_NFT_FLOW_OFFLOAD
+  FILES:= \
+	$(LINUX_DIR)/net/netfilter/nf_flow_table_inet.ko \
+	$(LINUX_DIR)/net/ipv4/netfilter/nf_flow_table_ipv4.ko \
+	$(LINUX_DIR)/net/ipv6/netfilter/nf_flow_table_ipv6.ko \
+	$(LINUX_DIR)/net/netfilter/nft_flow_offload.ko
+  AUTOLOAD:=$(call AutoProbe,nf_flow_table_inet nf_flow_table_ipv4 nf_flow_table_ipv6 nft_flow_offload)
+endef
+
+$(eval $(call KernelPackage,nft-offload))
 
 
 define KernelPackage/nft-nat6

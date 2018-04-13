@@ -9,13 +9,13 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=iptables
-PKG_VERSION:=1.6.1
-PKG_RELEASE:=2
+PKG_VERSION:=1.6.2
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://git.netfilter.org/iptables
-PKG_SOURCE_VERSION:=7df66f1c13563cfbab75246b009ce36f69ee4487
-PKG_MIRROR_HASH:=22f15ef41fd8e3724bedcee666b7b6a3491d2d038d580ef1fb032718dcb73f14
+PKG_SOURCE_VERSION:=c16bdec15137b241586310d0e61bc88cc3726004
+PKG_MIRROR_HASH:=72e4bec94a56dd600097846c773e1074ff705e38f800ef221db646c064371a53
 
 PKG_FIXUP:=autoreconf
 
@@ -349,10 +349,18 @@ Other extra iptables extensions.
   - addrtype
   - condition
   - owner
-  - physdev (if ebtables is enabled)
   - pkttype
   - quota
 
+endef
+
+define Package/iptables-mod-physdev
+$(call Package/iptables/Module, +kmod-ipt-physdev)
+  TITLE:=physdev iptables extension
+endef
+
+define Package/iptables-mod-physdev/description
+The iptables physdev match.
 endef
 
 define Package/iptables-mod-led
@@ -506,6 +514,7 @@ CONFIGURE_ARGS += \
 	--enable-devel \
 	--with-kernel="$(LINUX_DIR)/user_headers" \
 	--with-xtlibdir=/usr/lib/iptables \
+	--with-xt-lock-name=/var/run/xtables.lock \
 	$(if $(CONFIG_IPTABLES_CONNLABEL),,--disable-connlabel) \
 	$(if $(CONFIG_IPTABLES_NFTABLES),,--disable-nftables) \
 	$(if $(CONFIG_IPV6),,--disable-ipv6)
@@ -608,6 +617,7 @@ $(eval $(call BuildPackage,iptables))
 $(eval $(call BuildPlugin,iptables-mod-conntrack-extra,$(IPT_CONNTRACK_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m)))
 $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
+$(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
 $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))
 $(eval $(call BuildPlugin,iptables-mod-ipopt,$(IPT_IPOPT-m)))
 $(eval $(call BuildPlugin,iptables-mod-ipsec,$(IPT_IPSEC-m)))

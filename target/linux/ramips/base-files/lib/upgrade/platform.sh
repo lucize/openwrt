@@ -17,11 +17,13 @@ platform_check_image() {
 	ai-br100|\
 	air3gii|\
 	alfa-network,ac1200rm|\
+	alfa-network,awusfree1|\
 	all0239-3g|\
 	all0256n-4M|\
 	all0256n-8M|\
 	all5002|\
 	all5003|\
+	mediatek,ap-mt7621a-v60|\
 	ar725w|\
 	asl26555-8M|\
 	asl26555-16M|\
@@ -50,7 +52,6 @@ platform_check_image() {
 	dir-620-d1|\
 	dir-810l|\
 	duzun-dm06|\
-	dwr-512-b|\
 	e1700|\
 	esr-9753|\
 	ew1200|\
@@ -61,7 +62,7 @@ platform_check_image() {
 	fonera20n|\
 	freestation5|\
 	gb-pc1|\
-	gb-pc2|\
+	gnubee,gb-pc2|\
 	gl-mt300a|\
 	gl-mt300n|\
 	gl-mt750|\
@@ -141,6 +142,7 @@ platform_check_image() {
 	sap-g3200u3|\
 	sk-wb8|\
 	sl-r7205|\
+	tama,w06|\
 	tew-638apb-v2|\
 	tew-691gr|\
 	tew-692gr|\
@@ -201,6 +203,7 @@ platform_check_image() {
 	x8|\
 	y1|\
 	y1s|\
+	youhua,wr1200js|\
 	we1026-5g-16m|\
 	zbt-ape522ii|\
 	zbt-cpe102|\
@@ -215,6 +218,7 @@ platform_check_image() {
 	zbt-wg3526-16M|\
 	zbt-wg3526-32M|\
 	zbt-wr8305rt|\
+	zorlik,zl5900v2|\
 	zte-q7|\
 	youku-yk1)
 		[ "$magic" != "27051956" ] && {
@@ -247,6 +251,7 @@ platform_check_image() {
 	tplink,c20-v4|\
 	tplink,c50-v3|\
 	tplink,tl-mr3420-v5|\
+	tplink,tl-wr902ac-v3|\
 	tl-wr840n-v4|\
 	tl-wr840n-v5|\
 	tl-wr841n-v13)
@@ -262,6 +267,15 @@ platform_check_image() {
 	dir-645|\
 	dir-860l-b1)
 		[ "$magic" != "5ea3a417" ] && {
+			echo "Invalid image type."
+			return 1
+		}
+		return 0
+		;;
+	dlink,dwr-116-a1|\
+	dlink,dwr-921-c1|\
+	dwr-512-b)
+		[ "$magic" != "0404242b" ] && {
 			echo "Invalid image type."
 			return 1
 		}
