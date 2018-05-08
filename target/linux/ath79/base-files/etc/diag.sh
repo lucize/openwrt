@@ -9,7 +9,9 @@ get_status_led() {
 	"glinet,ar150")
 		status_led="gl-ar150:orange:wlan"
 		;;
-	"tplink,tl-wr1043nd-v1")
+	"tplink,tl-wr1043nd-v1"|\
+	"tplink,tl-wr1043nd-v2"|\
+	"tplink,tl-wr1043nd-v3")
 		status_led="tp-link:green:system"
 		;;
 	"ubnt,unifi")
