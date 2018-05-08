@@ -1,4 +1,4 @@
-DEVICE_VARS += TPLINK_HWID TPLINK_HWREV TPLINK_FLASHLAYOUT TPLINK_HEADER_VERSION TPLINK_BOARD_NAME
+DEVICE_VARS += LOADER_FLASH_OFFS TPLINK_BOARD_ID TPLINK_HWID TPLINK_HWREV TPLINK_FLASHLAYOUT TPLINK_HEADER_VERSION TPLINK_BOARD_NAME
 
 # combine kernel and rootfs into one image
 # mktplinkfw <type> <optional extra arguments to mktplinkfw binary>
@@ -30,7 +30,7 @@ define Build/mktplinkfw-combined
 		-m $(TPLINK_HEADER_VERSION) \
 		-k $@ \
 		-o $@.new \
-		-s -S \
+		-s \
 		-c
 	@mv $@.new $@
 endef
@@ -58,12 +58,11 @@ define Device/tplink
   TPLINK_HWREV := 0x1
   TPLINK_HEADER_VERSION := 1
   LOADER_TYPE := gz
-  KERNEL := kernel-bin | patch-cmdline | lzma
-  KERNEL_INITRAMFS := kernel-bin | patch-cmdline | lzma | mktplinkfw-combined
-#  IMAGES := sysupgrade.bin
+  KERNEL := kernel-bin | append-dtb | patch-cmdline | lzma
+#  KERNEL_INITRAMFS := kernel-bin | patch-cmdline | lzma | mktplinkfw-combined
   IMAGES := sysupgrade.bin factory.bin
   IMAGE/sysupgrade.bin := append-rootfs | mktplinkfw sysupgrade
-#  IMAGE/factory.bin := append-rootfs | mktplinkfw factory | a
+  IMAGE/factory.bin := append-rootfs | mktplinkfw factory
 endef
 
 define Device/tplink-nolzma
@@ -71,7 +70,7 @@ $(Device/tplink)
   LOADER_FLASH_OFFS := 0x22000
   COMPILE := loader-$(1).gz
   COMPILE/loader-$(1).gz := loader-okli-compile
-  #KERNEL := copy-file $(KDIR)/vmlinux.bin.lzma | uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
+#  KERNEL := copy-file $(KDIR)/vmlinux.bin.lzma | uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
   KERNEL:= kernel-bin | append-dtb | lzma |uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
   KERNEL_INITRAMFS := copy-file $(KDIR)/vmlinux-initramfs.bin.lzma | loader-kernel-cmdline | mktplinkfw-combined
 endef
@@ -105,15 +104,3 @@ $(Device/tplink)
   TPLINK_FLASHLAYOUT := 16Mlzma
   IMAGE_SIZE := 15872k
 endef
-
-define Device/tl_wr1043nd_v1
-  $(Device/tplink-8m)
-  ATH_SOC := ar9132
-  DEVICE_TITLE := TP-LINK TL-WR1043N/ND v1
-  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ledtrig-usbport
-  BOARDNAME := TL-WR1043ND
-  DEVICE_PROFILE := TLWR1043
-  TPLINK_HWID := 0x10430001
-endef
-
-#TARGET_DEVICES += tl_wr1043nd_v1

@@ -59,8 +59,10 @@ define Device/Default
 endef
 
 ifeq ($(SUBTARGET),generic)
-include ./tp-link.mk
+include ./generic-tp-link.mk
 include ./generic.mk
 include ./generic-ubnt.mk
 endif
+include ./legacy.mk
+
 $(eval $(call BuildImage))
