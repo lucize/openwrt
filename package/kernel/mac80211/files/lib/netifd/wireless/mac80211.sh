@@ -524,7 +524,7 @@ mac80211_setup_supplicant() {
 
 mac80211_setup_supplicant_noctl() {
 	wpa_supplicant_prepare_interface "$ifname" nl80211 || return 1
-	wpa_supplicant_add_network "$ifname" "$freq" "$htmode"
+	wpa_supplicant_add_network "$ifname" "$freq" "$htmode" "$noscan"
 	wpa_supplicant_run "$ifname"
 }
 
@@ -633,7 +633,7 @@ mac80211_setup_vif() {
 			if [ -n "$key" ]; then
 				wireless_vif_parse_encryption
 				freq="$(get_freq "$phy" "$channel")"
-				mac80211_setup_supplicant || failed=1
+				mac80211_setup_supplicant_noctl || failed=1
 			else
 				json_get_vars mesh_id mcast_rate
 
