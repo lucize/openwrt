@@ -1,0 +1,22 @@
+From 3cefd0bf495ad51a860b56281a8cae32bc4bd086 Mon Sep 17 00:00:00 2001
+From: Peter Oh <peter.oh@bowerswilkins.com>
+Date: Tue, 17 Apr 2018 21:55:06 -0700
+Subject: [PATCH 09/16] mesh: set mesh center frequency
+
+vht center frequency value is required to compose the correct channel info.
+
+Signed-off-by: Peter Oh <peter.oh@bowerswilkins.com>
+---
+ wpa_supplicant/mesh.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/wpa_supplicant/mesh.c
++++ b/wpa_supplicant/mesh.c
+@@ -456,6 +456,7 @@ int wpa_supplicant_join_mesh(struct wpa_
+ 
+ 	if (wpa_s->mesh_vht_enabled) {
+ 		ssid->vht = 1;
++		ssid->vht_center_freq1 = params->freq.center_freq1;
+ 		switch (params->freq.bandwidth) {
+ 		case 80:
+ 			if (params->freq.center_freq2) {
