@@ -8,7 +8,11 @@ ath79_setup_interfaces()
 	local board="$1"
 
 	case "$board" in
+	"etactica,eg200")
+		ucidef_set_interface_lan "eth0" "dhcp"
+		;;
 	"avm,fritz300e"|\
+	"tplink,tl-mr10u"|\
 	"tplink,tl-wr703n"|\
 	"ubnt,unifi")
 		ucidef_set_interface_lan "eth0"
