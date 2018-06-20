@@ -40,6 +40,15 @@ define Device/glinet_ar150
 endef
 TARGET_DEVICES += glinet_ar150
 
+define Device/glinet_ar300m_nor
+  ATH_SOC := qca9533
+  DEVICE_TITLE := GL.iNet GL-AR300M
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2
+  IMAGE_SIZE := 16000k
+  SUPPORTED_DEVICES += gl-ar300m
+endef
+TARGET_DEVICES += glinet_ar300m_nor
+
 define Device/openmesh_om5p-ac-v2
   ATH_SOC := qca9558
   DEVICE_TITLE := OpenMesh OM5P-AC v2
@@ -75,3 +84,17 @@ define Device/buffalo_wzr-hp-g450h
   SUPPORTED_DEVICES += wzr-hp-g450h
 endef
 TARGET_DEVICES += buffalo_wzr-hp-g450h
+
+define Device/phicomm-k2t
+  ATH_SOC := qca9563
+  DEVICE_TITLE := Phicomm K2T
+  KERNEL := kernel-bin | append-dtb | lzma | uImage lzma
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | uImage lzma
+  IMAGE_SIZE := 15744k
+  IMAGES := sysupgrade.bin
+  IMAGE/default := append-kernel | append-rootfs | pad-rootfs
+  IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size $$$$(IMAGE_SIZE)
+  DEVICE_PACKAGES := kmod-leds-reset kmod-ath10k ath10k-firmware-qca9888
+  SUPPORTED_DEVICES += phicomm,k2t
+endef
+TARGET_DEVICES += phicomm-k2t

@@ -4,6 +4,18 @@
 
 DEVICE_VARS += TPLINK_BOARD_ID TPLINK_HEADER_VERSION TPLINK_HWID TPLINK_HWREV
 
+define Build/elecom-wrc-factory
+  $(eval product=$(word 1,$(1)))
+  $(eval version=$(word 2,$(1)))
+  $(STAGING_DIR_HOST)/bin/mkhash md5 $@ >> $@
+  ( \
+    echo -n "ELECOM $(product) v$(version)" | \
+      dd bs=32 count=1 conv=sync; \
+    dd if=$@; \
+  ) > $@.new
+  mv $@.new $@
+endef
+
 define Build/ubnt-erx-factory-image
 	if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(KERNEL_SIZE)" ]; then \
 		echo '21001:6' > $(1).compat; \
@@ -64,6 +76,16 @@ define Device/mediatek_ap-mt7621a-v60
   DEVICE_PACKAGES := kmod-usb3 kmod-sdhci-mt7620 kmod-sound-mt7620
 endef
 TARGET_DEVICES += mediatek_ap-mt7621a-v60
+
+define Device/elecom_wrc-1167ghbk2-s
+  DTS := WRC-1167GHBK2-S
+  IMAGE_SIZE := 15488k
+  DEVICE_TITLE := ELECOM WRC-1167GHBK2-S
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) |\
+    elecom-wrc-factory WRC-1167GHBK2-S 0.00
+endef
+TARGET_DEVICES += elecom_wrc-1167ghbk2-s
 
 define Device/ew1200
   DTS := EW1200
@@ -171,7 +193,7 @@ define Device/d-team_newifi-d2
   IMAGE_SIZE := $(ralink_default_fw_size_32M)
   DEVICE_TITLE := Newifi D2
   DEVICE_PACKAGES := \
-	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport
+	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-mini
 endef
 TARGET_DEVICES += d-team_newifi-d2
 
@@ -299,8 +321,7 @@ define Device/w2914nsv2
   IMAGE_SIZE := $(ralink_default_fw_size_16M)
   DEVICE_TITLE := WeVO W2914NS v2
   DEVICE_PACKAGES := \
-	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport kmod-mt76 \
-	wpad-mini
+	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-mini
 endef
 TARGET_DEVICES += w2914nsv2
 
@@ -314,7 +335,7 @@ define Device/wf-2881
   UBINIZE_OPTS := -E 5
   IMAGE/sysupgrade.bin := append-kernel | append-ubi | append-metadata | check-size $$$$(IMAGE_SIZE)
   DEVICE_TITLE := NETIS WF-2881
-  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-mini
 endef
 TARGET_DEVICES += wf-2881
 
@@ -352,7 +373,7 @@ define Device/youhua_wr1200js
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := YouHua WR1200JS
   DEVICE_PACKAGES := \
-	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport
+	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-mini
 endef
 TARGET_DEVICES += youhua_wr1200js
 

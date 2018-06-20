@@ -16,17 +16,14 @@
 		bootargs = "console=ttyS0,115200n8";
 	};
 
-	extosc: ref {
-		compatible = "fixed-clock";
-		#clock-cells = <0>;
-		clock-output-names = "ref";
-		clock-frequency = <40000000>;
+	aliases {
+		led-status = &system;
 	};
 
 	leds {
 		compatible = "gpio-leds";
 
-		system {
+		system: system {
 			label = "tp-link:green:system";
 			gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "heartbeat";
@@ -36,12 +33,15 @@
 			label = "tp-link:green:usb";
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 			default-state = "off";
+			trigger-sources = <&hub_port0>;
+			linux,default-trigger = "usbport";
 		};
 
 		wifi_green {
 			label = "tp-link:green:wlan";
 			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
 			default-state = "off";
+			linux,default-trigger = "phy0tpt";
 		};
 
 		wifi_wps {
@@ -56,48 +56,52 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		button@0 {
+		reset {
 			label = "Reset button";
 			linux,code = <KEY_RESTART>;
 			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
 			debounce-interval = <60>;
 		};
 
-		button@1 {
+		wifi {
 			label = "RFKILL button";
 			linux,code = <KEY_RFKILL>;
 			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
 			debounce-interval = <60>;
 		};
 	};
-};
 
-/* no device connected
-&pcie0 {
-	status = "okay";
+	gpio-export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		gpio_usb_power {
+			gpio-export,name = "tp-link:power:usb";
+			gpio-export,output = <1>;
+			gpios = <&gpio 21 GPIO_ACTIVE_HIGH>;
+		};
+	};
 };
-*/
 
 &uart {
 	status = "okay";
 };
 
-&usb_phy {
+&gpio {
+	status = "okay";
+};
+
+&usb_phy0 {
 	status = "okay";
 };
 
 &usb0 {
 	status = "okay";
-};
 
-/* missing connector
-&usb1 {
-	status = "okay";
-};
-*/
-
-&pll {
-	clocks = <&extosc>;
+	hub_port0: port@1 {
+		reg = <1>;
+		#trigger-source-cells = <0>;
+	};
 };
 
 &spi {
@@ -127,7 +131,7 @@
 				reg = <0x020000 0x7d0000>;
 			};
 
-			partition@7f0000 {
+			art: partition@7f0000 {
 				label = "art";
 				reg = <0x7f0000 0x010000>;
 				read-only;
@@ -141,14 +145,17 @@
 
 	phy0: ethernet-phy@0 {
 		reg = <0>;
-		 qca,ar8327-initvals = <
-			0x04 0x00080080 /* PORT0 PAD MODE CTRL */
-			0x0c 0x07600000 /* PORT6 PAD MODE CTRL */
-			0x50 0xcf35cf35 /* LED_CTRL0 */
-			0x54 0xcf35cf35 /* LED_CTRL1 */
-			0x7c 0x0000007e /* PORT0_STATUS */
-			0x94 0x0000007e /* PORT6 STATUS */
-			>;
+		qca,ar8327-initvals = <
+		    0x04 0x00080080 /* PORT0 PAD MODE CTRL */
+		    0x0c 0x07600000 /* PORT6 PAD MODE CTRL */
+		    0x10 0x81000080 /* POWER_ON_STRIP */
+		    0x50 0xcc35cc35 /* LED_CTRL0 */
+		    0x54 0xca35ca35 /* LED_CTRL1 */
+		    0x58 0xc935c935 /* LED_CTRL2 */
+		    0x5c 0x03ffff00 /* LED_CTRL3 */
+		    0x7c 0x0000007e /* PORT0_STATUS */
+		    0x94 0x0000007e /* PORT6 STATUS */
+		>;
 	};
 };
 
@@ -165,7 +172,6 @@
 
 	mtd-mac-address = <&uboot 0x1fc00>;
 	mtd-mac-address-increment = <1>;
-
 	phy-handle = <&phy0>;
 };
 
@@ -179,4 +185,10 @@
 		speed = <1000>;
 		full-duplex;
 	};
+};
+
+&wmac {
+	status = "okay";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&uboot 0x1fc00>;
 };
