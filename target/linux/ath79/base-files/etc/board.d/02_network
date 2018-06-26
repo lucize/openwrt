@@ -33,6 +33,19 @@ ath79_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "eth1" "eth0"
 		;;
 
+	"netgear,wnr612-v2"|\
+	"on,n150r")
+		ucidef_set_interfaces_lan_wan "eth1.1" "eth0"
+		ucidef_add_switch "switch0" \
+		"0@eth1" "1:lan" "2:lan" "3:lan:3" "4:lan:4"
+		;;
+
+	"tplink,tl-archer-c7-v2")
+		ucidef_set_interfaces_lan_wan "eth1.1" "eth0.2"
+		ucidef_add_switch "switch0" \
+			"0@eth1" "2:lan" "3:lan" "4:lan" "5:lan" "6@eth0" "1:wan"
+		;;
+
 	"tplink,tl-mr3020-v1")
 		ucidef_set_interface_lan "eth0.1"
 		ucidef_add_switch "switch0" "0@eth0" "1:lan"
@@ -62,6 +75,10 @@ ath79_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "eth1.1" "eth0.2"
 		ucidef_add_switch "switch0" \
 			"0@eth1" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "5:wan" "6@eth0"
+		;;
+	"tplink,tl-wr2543-v1")
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "9@eth0"
 		;;
 	"netgear,wndr3800")
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
