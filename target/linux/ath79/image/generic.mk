@@ -98,3 +98,22 @@ define Device/phicomm-k2t
   SUPPORTED_DEVICES += phicomm,k2t
 endef
 TARGET_DEVICES += phicomm-k2t
+
+define Device/u4ea-fusion70
+  ATH_SOC := ar7161
+#  IMAGE_SIZE := 7808k
+  DEVICE_TITLE := U4EA FUSION 70
+  LOADER_FLASH_OFFS := 0x22000
+  LOADER_TYPE := gz
+  COMPILE := loader-$(1).gz
+  COMPILE/loader-$(1).gz := loader-okli-compile
+#  KERNEL := kernel-bin | append-dtb | lzma | uImage lzma -M 0x4f4b4c49 | loader-okli $(1) 15288
+  KERNEL := kernel-bin | append-dtb | gzip
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | gzip
+#  IMAGES := sysupgrade.bin
+#  IMAGE/sysupgrade.bin := append-rootfs | append-metadata
+#  IMAGE/factory.bin := append-rootfs | mktplinkfw factory | check-size $$$$(IMAGE_SIZE)
+  DEVICE_PACKAGES := vsc7385-ucode-pb44 vsc7395-ucode-pb44
+  SUPPORTED_DEVICES += u4ea,fusion70
+endef
+TARGET_DEVICES += u4ea-fusion70

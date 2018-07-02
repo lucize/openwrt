@@ -1,0 +1,229 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+#include "ar7100.dtsi"
+
+/ {
+	compatible = "u4ea,fusion70", "qca,ar7161";
+	model = "U4EA Fusion 70";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n8 ethaddr=00.0d.0b.13.6b.00 root=31:04";
+	};
+
+	aliases {
+		led-status = &system;
+	};
+
+	extosc: ref {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-output-names = "ref";
+		clock-frequency = <40000000>;
+	};
+
+/*	reset-leds {
+		compatible = "reset-leds";
+
+		wps {
+			label = "netgear:green:usb";
+			resets = <&rst 12>;
+		};
+	};*/
+
+	leds {
+		compatible = "gpio-leds";
+
+		system: power_green {
+			label = "u4ea:green:power";
+			gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+/*		power_orange {
+			label = "u4ea:orange:power";
+			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};*/
+
+		lan {
+			label = "u4ea:green:lan";
+			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+/*		wlan {
+			label = "u4ea:green:wlan";
+			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};*/
+	};
+
+	gpio-i2c {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpio 1 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpio 0 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+	};
+
+	gpio-keys-polled {
+		compatible = "gpio-keys";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		button0 {
+			label = "resert";
+			linux,code = <KEY_RESTART>;
+			gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+/*	rtl8366s {
+		compatible = "realtek,rtl8366s";
+		gpio-sda = <&gpio 5 GPIO_ACTIVE_HIGH>;
+		gpio-sck = <&gpio 7 GPIO_ACTIVE_HIGH>;
+
+		mdio-bus {
+			status = "okay";
+
+			phy-mask = <0x10>;
+
+			phy4: ethernet-phy@4 {
+				reg = <4>;
+				phy-mode = "rgmii";
+			};
+		};
+	};*/
+};
+
+&pcie0 {
+	status = "okay";
+};
+
+&uart {
+	status = "okay";
+};
+
+&spi {
+	status = "okay";
+	num-cs = <1>;
+
+	flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "jedec-nor";
+		reg = <0>;
+		spi-max-frequency = <25000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "RedBoot";
+				reg = <0x000000 0x040000>;
+				read-only;
+			};
+
+			partition@40000 {
+				label = "BootConfig";
+				reg = <0x040000 0x040000>;
+				read-only;
+			};
+
+			partition@80000 {
+				label = "BootConfigSave";
+				reg = <0x080000 0x040000>;
+				read-only;
+			};
+
+			partition@c0000 {
+				label = "KernelA";
+				reg = <0x0c0000 0x200000>;
+			};
+
+			partition@2c0000 {
+				label = "RootFsA";
+				reg = <0x2c0000 0x4c0000>;
+			};
+
+			partition@780000 {
+				label = "KernelB";
+				reg = <0x780000 0x180000>;
+			};
+
+			partition@900000 {
+				label = "RootFsB";
+				reg = <0x900000 0x300000>;
+			};
+
+			partition@c00000 {
+				label = "rootfs_data";
+				reg = <0xc00000 0x340000>;
+			};
+
+			partition@f40000 {
+				label = "Test";
+				reg = <0xf40000 0x040000>;
+				read-only;
+			};
+
+			partition@f80000 {
+				label = "FIS directory";
+				reg = <0xf80000 0x03f000>;
+				read-only;
+			};
+
+			partition@fbf000 {
+				label = "RedBoot config";
+				reg = <0xfbf000 0x01000>;
+				read-only;
+			};
+
+			partition@fc0000 {
+				label = "Board data";
+				reg = <0xfc0000 0x40000>;
+				read-only;
+			};
+		};
+	};
+};
+
+&mdio0 {
+	status = "okay";
+
+	phy-mask = <0>;
+	phy0: ethernet-phy@0 {
+		phy-mode = "rgmii";
+		reg = <0>;
+	};
+};
+
+&eth0 {
+	status = "okay";
+
+	pll-data = <0x11110000 0x00001099 0x00991099>;
+	phy-mode = "rgmi";
+
+	phy-handle = <&phy0>;
+};
+
+&eth1 {
+	status = "okay";
+
+	pll-data = <0x11110000 0x00001099 0x00991099>;
+	phy-mode = "rgmi";
+	resets = <&rst 13>;
+	reset-names = "mac";
+
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
+	};
+};
