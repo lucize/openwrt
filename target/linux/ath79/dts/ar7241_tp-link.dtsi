@@ -1,17 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/dts-v1/;
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 
-#include "ar7240.dtsi"
+#include "ar7241.dtsi"
 
 / {
-	compatible = "netgear,wnr612-v2", "qca,ar7240";
-	model = "Netgear WNR612 V2";
-
 	aliases {
-		led-status = &led_power;
+		led-status = &led_system;
 	};
 
 	gpio-keys-polled {
@@ -23,38 +19,29 @@
 		reset {
 			label = "reset";
 			linux,code = <KEY_RESTART>;
-			gpios = <&ath9k 7 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+			debounce-interval = <60>;
+		};
+
+		qss {
+			label = "qss";
+			linux,code = <KEY_WPS_BUTTON>;
+			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
 			debounce-interval = <60>;
 		};
 	};
 
-	gpio-leds {
+	gpio_leds: gpio-leds {
 		compatible = "gpio-leds";
-		led_power: power {
-			label = "netgear:green:power";
-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+
+		led_system: system {
+			label = "tp-link:green:system";
+			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
 		};
 
-		lan1 {
-			label = "netgear:green:lan1";
-			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
-		};
-
-		lan2 {
-			label = "netgear:green:lan2";
-			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
-		};
-
-		wan {
-			label = "netgear:green:wan";
-			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
-		};
-
-		wlan: wlan {
-			label = "netgear:green:wlan";
-			gpios = <&ath9k 1 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-			linux,default-trigger = "phy0tpt";
+		qss {
+			label = "tp-link:green:qss";
+			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
 		};
 	};
 };
@@ -76,18 +63,13 @@
 			#size-cells = <1>;
 
 			uboot: partition@0 {
-				reg = <0x0 0x40000>;
+				reg = <0x0 0x20000>;
 				label = "u-boot";
 				read-only;
 			};
 
-			partition@40000 {
-				reg = <0x40000 0x10000>;
-				label = "u-boot-env";
-			};
-
-			partition@50000 {
-				reg = <0x50000 0x3a0000>;
+			partition@20000 {
+				reg = <0x20000 0x3d0000>;
 				label = "firmware";
 			};
 
@@ -97,6 +79,18 @@
 				read-only;
 			};
 		};
+	};
+};
+
+&pcie {
+	status = "okay";
+
+	ath9k: wifi@0 {
+		reg = <0x0000 0 0 0 0>;
+		#gpio-cells = <2>;
+		gpio-controller;
+		qca,no-eeprom;
+		mtd-mac-address = <&uboot 0x1fc00>;
 	};
 };
 
@@ -125,16 +119,8 @@
 	};
 };
 
-&pcie {
+&gpio {
 	status = "okay";
-
-	ath9k: wifi@168c,002b {
-		compatible = "pci168c,002b";
-		reg = <0x0000 0 0 0 0>;
-		qca,no-eeprom;
-		#gpio-cells = <2>;
-		gpio-controller;
-	};
 };
 
 &uart {
