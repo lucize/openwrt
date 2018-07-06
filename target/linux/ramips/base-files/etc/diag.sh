@@ -42,6 +42,7 @@ get_status_led() {
 	r6220|\
 	tplink,c20-v4|\
 	tplink,c50-v3|\
+	tplink,tl-wa801nd-v5|\
 	tplink,tl-mr3420-v5|\
 	tplink,tl-wr842n-v5|\
 	tplink,tl-wr902ac-v3|\
@@ -54,7 +55,8 @@ get_status_led() {
 	x5|\
 	x8|\
 	xdxrn502j|\
-	wn3000rpv3)
+	wn3000rpv3|\
+	zyxel,keenetic-extra-ii)
 		status_led="$boardname:green:power"
 		;;
 	3g-6200nl)
@@ -209,8 +211,9 @@ get_status_led() {
 	m4-8M)
 		status_led="m4:blue:status"
 		;;
+	mikrotik,rbm11g|\
 	mikrotik,rbm33g)
-		status_led="rbm33g:green:usr"
+		status_led="$boardname:green:usr"
 		;;
 	miwifi-mini|\
 	zte-q7)
