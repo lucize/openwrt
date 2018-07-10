@@ -19,7 +19,7 @@ include $(INCLUDE_DIR)/toolchain-build.mk
 HOST_CONFIGURE_ARGS+= \
 		--target=$(REAL_GNU_TARGET_NAME) \
 		--with-sysroot=$(TOOLCHAIN_DIR) \
-		--enable-lto \
+		--disable-lto \
 		--disable-werror \
 		--disable-gdb \
 		$(SOFT_FLOAT_CONFIG_OPTION) \
@@ -37,12 +37,9 @@ define Host/Configure
 	$(call Host/Configure/Default)
 endef
 
-define Host/Compile
-	+$(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) all
-endef
-
 define Host/Install
 	$(MAKE) -C $(HOST_BUILD_DIR) \
+		$(HOST_MAKE_FLAGS) \
 		prefix=$(TOOLCHAIN_DIR) \
 		install
 endef

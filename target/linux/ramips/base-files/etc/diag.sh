@@ -28,6 +28,7 @@ get_status_led() {
 	fonera20n|\
 	firewrt|\
 	hg255d|\
+	iodata,wn-ax1167gr|\
 	iodata,wn-gx300gr|\
 	kn|\
 	kn_rc|\
@@ -198,11 +199,12 @@ get_status_led() {
 	hc5962)
 		status_led="$boardname:white:status"
 		;;
-	linkits7688)
-		status_led="linkit-smart-7688:orange:wifi"
-		;;
+	kimax,u35wf|\
 	m2m)
 		status_led="$boardname:blue:wifi"
+		;;
+	linkits7688)
+		status_led="linkit-smart-7688:orange:wifi"
 		;;
 	gl-mt300n-v2)
 		status_led="$boardname:green:power"
