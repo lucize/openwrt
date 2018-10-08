@@ -154,6 +154,8 @@ struct ag71xx {
 	struct ag71xx_ring	rx_ring ____cacheline_aligned;
 	struct ag71xx_ring	tx_ring ____cacheline_aligned;
 
+	int			mac_idx;
+
 	u16			desc_pktlen_mask;
 	u16			rx_buf_size;
 	u8			rx_buf_offset;
@@ -186,7 +188,6 @@ struct ag71xx {
 	struct timer_list	oom_timer;
 
 	struct reset_control *mac_reset;
-	struct reset_control *phy_reset;
 
 	u32			fifodata[3];
 	u32			plldata[3];
