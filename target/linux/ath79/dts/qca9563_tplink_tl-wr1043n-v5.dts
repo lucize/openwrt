@@ -7,33 +7,8 @@
 #include "qca9563_tplink_tl-wr1043n.dtsi"
 
 / {
-	compatible = "tplink,tl-wr1043nd-v4", "qca,qca9563";
-	model = "TP-Link TL-WR1043ND Version 4";
-};
-
-&gpio_leds {
-	usb {
-		label = "tp-link:green:usb";
-		gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
-		default-state = "off";
-		trigger-sources = <&hub_port0>;
-		linux,default-trigger = "usbport";
-	};
-};
-
-&usb_phy0 {
-	status = "okay";
-};
-
-&usb0 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-	status = "okay";
-
-	hub_port0: port@1 {
-		reg = <1>;
-		#trigger-source-cells = <0>;
-	};
+	compatible = "tplink,tl-wr1043n-v5", "qca,qca9563";
+	model = "TP-Link TL-WR1043N Version 5";
 };
 
 &spi {
@@ -51,26 +26,32 @@
 			#size-cells = <1>;
 
 			partition@0 {
-				label = "u-boot";
+				label = "factory-uboot";
 				reg = <0x000000 0x020000>;
 				read-only;
 			};
 
 			partition@20000 {
-				compatible = "tplink,firmware";
-				label = "firmware";
-				reg = <0x020000 0xf30000>;
-			};
-
-			info: partition@f50000 {
-				label = "product-info";
-				reg = <0xf50000 0x020000>;
+				label = "u-boot";
+				reg = <0x020000 0x020000>;
 				read-only;
 			};
 
-			partition@f70000 {
+			partition@40000 {
+				compatible = "tplink,firmware";
+				label = "firmware";
+				reg = <0x040000 0xec0000>;
+			};
+
+			info: partition@f00000 {
+				label = "product-info";
+				reg = <0xf00000 0x020000>;
+				read-only;
+			};
+
+			partition@f20000 {
 				label = "config";
-				reg = <0xf70000 0x050000>;
+				reg = <0xf20000 0x0a0000>;
 				read-only;
 			};
 
@@ -87,7 +68,7 @@
 			};
 
 			art: partition@ff0000 {
-				label = "ART";
+				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
 			};
