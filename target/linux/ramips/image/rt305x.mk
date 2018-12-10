@@ -329,6 +329,7 @@ define Device/f5d8235-v2
   DTS := F5D8235_V2
   IMAGE_SIZE := 7744k
   DEVICE_TITLE := Belkin F5D8235 v2
+  DEVICE_PACKAGES := kmod-switch-rtl8366rb
 endef
 TARGET_DEVICES += f5d8235-v2
 
@@ -652,7 +653,7 @@ TARGET_DEVICES += rt-n10-plus
 define Device/rt-n13u
   DTS := RT-N13U
   DEVICE_TITLE := Asus RT-N13U
-  DEVICE_PACKAGES := kmod-leds-gpio kmod-rt2800-pci wpad-mini kmod-usb-dwc2
+  DEVICE_PACKAGES := kmod-leds-gpio kmod-rt2800-pci kmod-usb-dwc2
 endef
 TARGET_DEVICES += rt-n13u
 

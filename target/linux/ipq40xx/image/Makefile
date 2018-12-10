@@ -105,6 +105,20 @@ define Device/compex_wpj428
 endef
 TARGET_DEVICES += compex_wpj428
 
+define Device/engenius_eap1300
+	$(call Device/FitImage)
+	DEVICE_TITLE := EnGenius EAP1300
+	DEVICE_DTS_CONFIG := config@4
+	BOARD_NAME := eap1300
+	DEVICE_DTS := qcom-ipq4018-eap1300
+	KERNEL_SIZE := 5120k
+	IMAGE_SIZE := 25344k
+	IMAGES := sysupgrade.bin
+	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
+	DEVICE_PACKAGES := ipq-wifi-engenius_eap1300
+endef
+TARGET_DEVICES += engenius_eap1300
+
 define Device/glinet_gl-b1300
 	$(call Device/FitImage)
 	DEVICE_TITLE := GL.iNet GL-B1300
@@ -223,7 +237,7 @@ define Device/zyxel_nbg6617
 #	this minimum-size. However, the larger image can be flashed both ways.
 	IMAGE/factory.bin := append-rootfs | pad-rootfs | pad-to 64k | check-size $$$$(ROOTFS_SIZE) | zyxel-ras-image separate-kernel
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | check-size $$$$(ROOTFS_SIZE) | sysupgrade-tar rootfs=$$$$@ | append-metadata
-	DEVICE_PACKAGES := ipq-wifi-zyxel_nbg6617 uboot-envtools
+	DEVICE_PACKAGES := uboot-envtools
 endef
 TARGET_DEVICES += zyxel_nbg6617
 
@@ -232,7 +246,6 @@ define Device/zyxel_wre6606
 	DEVICE_TITLE := ZyXEL WRE6606
 	DEVICE_DTS_CONFIG := config@4
 	DEVICE_DTS := qcom-ipq4018-wre6606
-	DEVICE_PACKAGES := ipq-wifi-zyxel_wre6606
 	IMAGES := sysupgrade.bin
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
 endef
