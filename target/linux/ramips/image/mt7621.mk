@@ -93,21 +93,12 @@ endef
 TARGET_DEVICES += 11acnas
 
 define Device/dir-860l-b1
+  $(Device/seama)
   DTS := DIR-860L-B1
   BLOCKSIZE := 64k
-  IMAGES += factory.bin
+  SEAMA_SIGNATURE := wrgac13_dlink.2013gui_dir860lb
   KERNEL := kernel-bin | patch-dtb | relocate-kernel | lzma | uImage lzma
   IMAGE_SIZE := $(ralink_default_fw_size_16M)
-  IMAGE/sysupgrade.bin := \
-	append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-rootfs | \
-	seama -m "dev=/dev/mtdblock/2" -m "type=firmware" | \
-	pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
-  IMAGE/factory.bin := \
-	append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | \
-	append-rootfs | pad-rootfs -x 64 | \
-	seama -m "dev=/dev/mtdblock/2" -m "type=firmware" | \
-	seama-seal -m "signature=wrgac13_dlink.2013gui_dir860lb" | \
-	check-size $$$$(IMAGE_SIZE)
   DEVICE_TITLE := D-Link DIR-860L B1
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
 endef
@@ -120,6 +111,16 @@ define Device/mediatek_ap-mt7621a-v60
   DEVICE_PACKAGES := kmod-usb3 kmod-sdhci-mt7620 kmod-sound-mt7620
 endef
 TARGET_DEVICES += mediatek_ap-mt7621a-v60
+
+define Device/xzwifi_creativebox-v1
+  DTS := CreativeBox-v1
+  IMAGE_SIZE := $(ralink_default_fw_size_32M)
+  DEVICE_TITLE := CreativeBox v1
+  DEVICE_PACKAGES := \
+	kmod-ata-core kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
+	kmod-usb3
+endef
+TARGET_DEVICES += xzwifi_creativebox-v1
 
 define Device/elecom_wrc-1167ghbk2-s
   DTS := WRC-1167GHBK2-S
@@ -168,6 +169,15 @@ define Device/firewrt
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
 endef
 TARGET_DEVICES += firewrt
+
+define Device/gehua_ghl-r-001
+  DTS := GHL-R-001
+  IMAGE_SIZE := $(ralink_default_fw_size_32M)
+  DEVICE_TITLE := GeHua GHL-R-001
+  DEVICE_PACKAGES := \
+	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
+endef
+TARGET_DEVICES += gehua_ghl-r-001
 
 define Device/gnubee_gb-pc1
   DTS := GB-PC1
@@ -297,13 +307,22 @@ define Device/r6220
 endef
 TARGET_DEVICES += r6220
 
-define Device/rb750gr3
-  DTS := RB750Gr3
-  IMAGE_SIZE := $(ralink_default_fw_size_16M)
-  DEVICE_TITLE := MikroTik RB750Gr3
-  DEVICE_PACKAGES := kmod-usb3 uboot-envtools
+define Device/netgear_r6350
+  DTS := R6350
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 40960k
+  UBINIZE_OPTS := -E 5
+  IMAGES += kernel.bin rootfs.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE/kernel.bin := append-kernel
+  IMAGE/rootfs.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  DEVICE_TITLE := Netgear R6350
+  DEVICE_PACKAGES := \
+	kmod-mt7603 kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
 endef
-TARGET_DEVICES += rb750gr3
+TARGET_DEVICES += netgear_r6350
 
 define Device/MikroTik
   BLOCKSIZE := 64k
@@ -315,6 +334,14 @@ define Device/MikroTik
   IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | pad-to $$$$(BLOCKSIZE) | \
 	append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
 endef
+
+define Device/mikrotik_rb750gr3
+  $(Device/MikroTik)
+  DTS := RB750Gr3
+  DEVICE_TITLE := MikroTik RouterBOARD RB750Gr3
+  DEVICE_PACKAGES += kmod-gpio-beeper
+endef
+TARGET_DEVICES += mikrotik_rb750gr3
 
 define Device/mikrotik_rbm33g
   $(Device/MikroTik)

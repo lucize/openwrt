@@ -14,7 +14,7 @@
 		led-upgrade = &power;
 	};
 
-	gpio-keys-polled {
+	keys {
 		compatible = "gpio-keys-polled";
 		poll-interval = <20>;
 
@@ -26,7 +26,7 @@
 		};
 	};
 
-	gpio-leds {
+	leds {
 		compatible = "gpio-leds";
 		power: power {
 			label = "netgear:green:power";
@@ -51,7 +51,6 @@
 		wlan: wlan {
 			label = "netgear:green:wlan";
 			gpios = <&ath9k 1 GPIO_ACTIVE_LOW>;
-			default-state = "off";
 			linux,default-trigger = "phy0tpt";
 		};
 	};

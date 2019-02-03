@@ -45,8 +45,8 @@ endef
 
 define Package/samba36-hotplug
   $(call Package/samba/Default)
-  TITLE+= hotplug
-  DEPENDS:=+block-mount
+  TITLE+= hotplug script for auto sharing
+  DEPENDS:=+blockd
 endef
 
 define Package/samba36-client
@@ -168,10 +168,8 @@ define Package/samba36-server/install
 endef
 
 define Package/samba36-hotplug/install
-	$(INSTALL_DIR) $(1)/lib/samba
-	$(INSTALL_CONF) ./files/lib/samba.sh $(1)/lib/samba/samba.sh
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
-	$(INSTALL_CONF) ./files/samba.hotplug $(1)/etc/hotplug.d/block/60-samba
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/mount
+	$(INSTALL_CONF) ./files/samba.hotplug $(1)/etc/hotplug.d/mount/60-samba
 endef
 
 define Package/samba36-client/install

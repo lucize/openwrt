@@ -2,6 +2,8 @@ include ./common-buffalo.mk
 include ./common-netgear.mk
 
 DEVICE_VARS += ADDPATTERN_ID ADDPATTERN_VERSION
+DEVICE_VARS += SEAMA_SIGNATURE SEAMA_MTDBLOCK
+DEVICE_VARS += KERNEL_INITRAMFS_PREFIX
 
 define Build/cybertan-trx
 	@echo -n '' > $@-empty.bin
@@ -18,29 +20,53 @@ define Build/addpattern
 	-mv "$@.new" "$@"
 endef
 
-define Build/elecom-header
-  $(eval fw_size=$(word 1,$(1)))
-  $(eval edimax_model=$(word 2,$(1)))
-  $(eval product=$(word 3,$(1)))
-  $(eval factory_bin=$(word 4,$(1)))
-  if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(fw_size)" ]; then \
-    $(CP) $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) $(factory_bin); \
-    $(STAGING_DIR_HOST)/bin/mkedimaximg \
-      -b -s CSYS -m $(edimax_model) \
-      -f 0x70000 -S 0x01100000 \
-      -i $(factory_bin) -o $(factory_bin).new; \
-    mv $(factory_bin).new $(factory_bin); \
-    ( \
-      echo -n -e "ELECOM\x00\x00$(product)" | dd bs=40 count=1 conv=sync; \
-      echo -n "0.00" | dd bs=16 count=1 conv=sync; \
-      dd if=$(factory_bin); \
-    ) > $(factory_bin).new; \
-    mv $(factory_bin).new $(factory_bin); \
-    $(CP) $(factory_bin) $(BIN_DIR)/; \
-	else \
-		echo "WARNING: initramfs kernel image too big, cannot generate factory image" >&2; \
-	fi
+define Build/add-elecom-factory-initramfs
+  $(eval edimax_model=$(word 1,$(1)))
+  $(eval product=$(word 2,$(1)))
 
+  $(STAGING_DIR_HOST)/bin/mkedimaximg \
+	-b -s CSYS -m $(edimax_model) \
+	-f 0x70000 -S 0x01100000 \
+	-i $@ -o $@.factory
+
+  ( \
+	echo -n -e "ELECOM\x00\x00$(product)" | dd bs=40 count=1 conv=sync; \
+	echo -n "0.00" | dd bs=16 count=1 conv=sync; \
+	dd if=$@.factory; \
+  ) > $@.factory.new
+
+  if [ "$$(stat -c%s $@.factory.new)" -le $$(($(subst k,* 1024,$(subst m, * 1024k,$(IMAGE_SIZE))))) ]; then \
+	mv $@.factory.new $(BIN_DIR)/$(KERNEL_INITRAMFS_PREFIX)-factory.bin; \
+  else \
+	echo "WARNING: initramfs kernel image too big, cannot generate factory image" >&2; \
+  fi
+endef
+
+define Build/nec-fw
+  ( stat -c%s $@ | tr -d "\n" | dd bs=16 count=1 conv=sync; ) >> $@
+  ( \
+    echo -n -e "$(1)" | dd bs=16 count=1 conv=sync; \
+    echo -n "0.0.00" | dd bs=16 count=1 conv=sync; \
+    dd if=$@; \
+  ) > $@.new
+  mv $@.new $@
+endef
+
+define Device/seama
+  KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma
+  KERNEL_INITRAMFS := $$(KERNEL) | seama
+  IMAGES += factory.bin
+  SEAMA_MTDBLOCK := 1
+
+  # 64 bytes offset:
+  # - 28 bytes seama_header
+  # - 36 bytes of META data (4-bytes aligned)
+  IMAGE/default := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-rootfs
+  IMAGE/sysupgrade.bin := \
+	$$(IMAGE/default) | seama | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := \
+	$$(IMAGE/default) | pad-rootfs -x 64 | seama | seama-seal | check-size $$$$(IMAGE_SIZE)
+  SEAMA_SIGNATURE :=
 endef
 
 define Device/avm_fritz300e
@@ -128,6 +154,54 @@ define Device/buffalo_wzr-hp-g450h
 endef
 TARGET_DEVICES += buffalo_wzr-hp-g450h
 
+define Device/comfast_cf-e110n-v2
+  ATH_SOC := qca9533
+  DEVICE_TITLE := COMFAST CF-E110N v2
+  DEVICE_PACKAGES := rssileds kmod-leds-gpio -swconfig -uboot-envtools
+  IMAGE_SIZE := 16192k
+endef
+TARGET_DEVICES += comfast_cf-e110n-v2
+
+define Device/devolo_dvl1200e
+  ATH_SOC := qca9558
+  DEVICE_TITLE := devolo WiFi pro 1200e
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += devolo_dvl1200e
+
+define Device/devolo_dvl1200i
+  ATH_SOC := qca9558
+  DEVICE_TITLE := devolo WiFi pro 1200i
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += devolo_dvl1200i
+
+define Device/devolo_dvl1750c
+  ATH_SOC := qca9558
+  DEVICE_TITLE := devolo WiFi pro 1750c
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += devolo_dvl1750c
+
+define Device/devolo_dvl1750e
+  ATH_SOC := qca9558
+  DEVICE_TITLE := devolo WiFi pro 1750e
+  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += devolo_dvl1750e
+
+define Device/devolo_dvl1750i
+  ATH_SOC := qca9558
+  DEVICE_TITLE := devolo WiFi pro 1750i
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += devolo_dvl1750i
+
 define Device/dlink_dir-825-b1
   ATH_SOC := ar7161
   DEVICE_TITLE := D-LINK DIR-825 B1
@@ -138,13 +212,61 @@ define Device/dlink_dir-825-b1
 endef
 TARGET_DEVICES += dlink_dir-825-b1
 
+define Device/dlink_dir-825-c1
+  ATH_SOC := ar9344
+  DEVICE_TITLE := D-LINK DIR-825 C1
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ledtrig-usbport kmod-leds-reset kmod-owl-loader
+  SUPPORTED_DEVICES += dir-825-c1
+  IMAGE_SIZE := 15936k
+  IMAGES := factory.bin sysupgrade.bin
+  IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs
+  IMAGE/factory.bin := $$(IMAGE/default) | pad-offset $$$$(IMAGE_SIZE) 26 | \
+	append-string 00DB120AR9344-RT-101214-00 | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += dlink_dir-825-c1
+
+define Device/dlink_dir-835-a1
+  ATH_SOC := ar9344
+  DEVICE_TITLE := D-LINK DIR-835 A1
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-leds-reset kmod-owl-loader
+  SUPPORTED_DEVICES += dir-835-a1
+  IMAGE_SIZE := 15936k
+  IMAGES := factory.bin sysupgrade.bin
+  IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs
+  IMAGE/factory.bin := $$(IMAGE/default) | pad-offset $$$$(IMAGE_SIZE) 26 | \
+	append-string 00DB120AR9344-RT-101214-00 | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += dlink_dir-835-a1
+
+define Device/dlink_dir-859-a1
+  $(Device/seama)
+  ATH_SOC := qca9563
+  DEVICE_TITLE := D-LINK DIR-859 A1
+  IMAGE_SIZE := 15872k
+  DEVICE_PACKAGES :=  kmod-usb-core kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  SEAMA_SIGNATURE := wrgac37_dlink.2013gui_dir859
+  SUPPORTED_DEVICES += dir-859-a1
+endef
+TARGET_DEVICES += dlink_dir-859-a1
+
+define Device/elecom_wrc-1750ghbk2-i
+  ATH_SOC := qca9563
+  DEVICE_TITLE := ELECOM WRC-1750GHBK2-I/C
+  IMAGE_SIZE := 15808k
+  KERNEL_INITRAMFS := $$(KERNEL) | pad-to 2 | \
+	add-elecom-factory-initramfs RN68 WRC-1750GHBK2
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+endef
+TARGET_DEVICES += elecom_wrc-1750ghbk2-i
+
 define Device/elecom_wrc-300ghbk2-i
   ATH_SOC := qca9563
   DEVICE_TITLE := ELECOM WRC-300GHBK2-I
   IMAGE_SIZE := 7616k
   KERNEL_INITRAMFS := $$(KERNEL) | pad-to 2 | \
-    elecom-header 7798706 RN51 WRC-300GHBK2-I \
-      $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.bin
+	add-elecom-factory-initramfs RN51 WRC-300GHBK2-I
 endef
 TARGET_DEVICES += elecom_wrc-300ghbk2-i
 
@@ -156,6 +278,14 @@ define Device/embeddedwireless_dorin
 endef
 TARGET_DEVICES += embeddedwireless_dorin
 
+define Device/engenius_ews511ap
+  ATH_SOC := qca9531
+  DEVICE_TITLE := EnGenius EWS511AP
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct
+  IMAGE_SIZE := 16000k
+endef
+TARGET_DEVICES += engenius_ews511ap
+
 define Device/etactica_eg200
   ATH_SOC := ar9331
   DEVICE_TITLE := eTactica EG200
@@ -165,28 +295,37 @@ define Device/etactica_eg200
 endef
 TARGET_DEVICES += etactica_eg200
 
-define Device/glinet_ar150
+define Device/glinet_gl-ar150
   ATH_SOC := ar9330
   DEVICE_TITLE := GL.iNet GL-AR150
   DEVICE_PACKAGES := kmod-usb-chipidea2
   IMAGE_SIZE := 16000k
   SUPPORTED_DEVICES += gl-ar150
 endef
-TARGET_DEVICES += glinet_ar150
+TARGET_DEVICES += glinet_gl-ar150
 
-define Device/glinet_ar300m-nor
+define Device/glinet_gl-ar300m-nor
   ATH_SOC := qca9531
   DEVICE_TITLE := GL.iNet GL-AR300M
   DEVICE_PACKAGES := kmod-usb-core kmod-usb2
   IMAGE_SIZE := 16000k
   SUPPORTED_DEVICES += gl-ar300m
 endef
-TARGET_DEVICES += glinet_ar300m-nor
+TARGET_DEVICES += glinet_gl-ar300m-nor
+
+define Device/glinet_gl-ar750s
+  ATH_SOC := qca9563
+  DEVICE_TITLE := GL.iNet GL-AR750S
+  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 16000k
+  SUPPORTED_DEVICES += gl-ar750s
+endef
+TARGET_DEVICES += glinet_gl-ar750s
 
 define Device/glinet_gl-x750
   ATH_SOC := qca9531
   DEVICE_TITLE := GL.iNet GL-X750
-  DEVICE_PACKAGES := kmod-usb-core kmod-usb2  kmod-ath10k ath10k-firmware-qca9887
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9887-ct
   IMAGE_SIZE := 16000k
 endef
 TARGET_DEVICES += glinet_gl-x750
@@ -233,6 +372,19 @@ define Device/iodata_wn-ag300dgr
   DEVICE_PACKAGES := kmod-usb-core kmod-usb2
 endef
 TARGET_DEVICES += iodata_wn-ag300dgr
+
+define Device/nec_wg800hp
+  ATH_SOC := qca9563
+  DEVICE_TITLE := NEC Aterm WG800HP
+  IMAGE_SIZE := 7104k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+    append-rootfs | pad-rootfs | check-size $$$$(IMAGE_SIZE) | \
+    xor-image -p 6A57190601121E4C004C1E1201061957 -x | \
+    nec-fw LASER_ATERM
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct-htt
+endef
+TARGET_DEVICES += nec_wg800hp
 
 define Device/ocedo_koala
   ATH_SOC := qca9558

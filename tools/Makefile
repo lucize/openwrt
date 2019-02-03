@@ -33,7 +33,7 @@ tools-$(CONFIG_TARGET_mxs) += elftosb sdimage
 tools-$(CONFIG_TARGET_ar71xx) += lzma-old
 tools-$(CONFIG_TARGET_ar71xx)$(CONFIG_TARGET_ath79) += squashfs
 tools-$(CONFIG_USES_MINOR) += kernel2minor
-tools-y += lzma squashfs4
+tools-y += lzma squashfs4 zip
 tools-$(BUILD_B43_TOOLS) += b43-tools
 tools-$(BUILD_ISL) += isl
 tools-$(CONFIG_USE_SPARSE) += sparse
@@ -99,9 +99,10 @@ $(foreach tool, $(tools-y), $(eval $(curdir)/$(tool)/compile += $(patsubst %,$(c
 tools-y += $(tools-core)
 
 # make core tools depend on sed and flock
-$(foreach tool, $(tools-core), $(eval $(curdir)/$(tool)/compile += $(curdir)/sed/compile))
+$(foreach tool, $(filter-out xz,$(tools-core)), $(eval $(curdir)/$(tool)/compile += $(curdir)/sed/compile))
+$(curdir)/xz/compile += $(curdir)/flock/compile
 
-$(curdir)/sed/compile := $(curdir)/flock/compile
+$(curdir)/sed/compile := $(curdir)/flock/compile $(curdir)/xz/compile
 tools-y += flock sed
 
 $(curdir)/autoremove := 1

@@ -33,6 +33,7 @@ ramips_setup_interfaces()
 	case $board in
 	11acnas|\
 	d-team,newifi-d2|\
+	dir-615-h1|\
 	w2914nsv2|\
 	zbt-we2026)
 		ucidef_add_switch "switch0" \
@@ -80,6 +81,7 @@ ramips_setup_interfaces()
 	ai-br100|\
 	alfa-network,ac1200rm|\
 	mediatek,ap-mt7621a-v60|\
+	xzwifi,creativebox-v1|\
 	d240|\
 	db-wrt01|\
 	dir-300-b7|\
@@ -89,6 +91,7 @@ ramips_setup_interfaces()
 	dir-810l|\
 	dlink,dwr-116-a1|\
 	dlink,dwr-921-c1|\
+	dlink,dwr-922-e2|\
 	ew1200|\
 	firewrt|\
 	hc5661a|\
@@ -113,6 +116,7 @@ ramips_setup_interfaces()
 	psg1208|\
 	psg1218a|\
 	r6220|\
+	netgear,r6350|\
 	rt-n12p|\
 	sap-g3200u3|\
 	sk-wb8|\
@@ -138,6 +142,10 @@ ramips_setup_interfaces()
 	zbt-wr8305rt)
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
+		;;
+	gehua,ghl-r-001)
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "4:wan" "6@eth0"
 		;;
 	alfa-network,awusfree1|\
 	cs-qr10|\
@@ -215,13 +223,14 @@ ramips_setup_interfaces()
 	jhr-n805r|\
 	jhr-n825r|\
 	jhr-n926r|\
+	mikrotik,rb750gr3|\
 	mikrotik,rbm33g|\
 	mzk-wdpr|\
-	rb750gr3|\
 	rt-n14u|\
 	skylab,skw92a|\
 	tplink,c20-v4|\
 	tplink,c50-v3|\
+	tplink,c50-v4|\
 	tplink,tl-mr3420-v5|\
 	tplink,tl-wr842n-v5|\
 	tl-wr840n-v4|\
@@ -304,7 +313,8 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch1" \
 			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
 		;;
-	hc5*61|\
+	hc5661|\
+	hc5861|\
 	y1s)
 		ucidef_add_switch "switch0" \
 			"1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "0:wan" "6@eth0"
@@ -326,6 +336,10 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "6t@eth0"
 		ucidef_set_interface_wan "usb0"
+		;;
+	hc5761)
+		ucidef_add_switch "switch0" \
+			"1:lan" "4:lan" "0:wan" "6@eth0"
 		;;
 	mzk-dp150n|\
 	vocore-8M|\
@@ -437,7 +451,6 @@ ramips_setup_macs()
 	wmdr-143n)
 		lan_mac=$(cat /sys/class/net/eth0/address)
 		;;
-	all0239-3g|\
 	carambola|\
 	freestation5|\
 	w502u|\
@@ -482,6 +495,7 @@ ramips_setup_macs()
 	dlink,dwr-118-a1|\
 	dlink,dwr-118-a2|\
 	dlink,dwr-921-c1|\
+	dlink,dwr-922-e2|\
 	lava,lr-25g001)
 		wan_mac=$(jboot_config_read -m -i $(find_mtd_part "config") -o 0xE000)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
@@ -557,7 +571,8 @@ ramips_setup_macs()
 		lan_mac=$(mtd_get_mac_binary factory 40)
 		wan_mac=$(mtd_get_mac_binary factory 46)
 		;;
-	r6220)
+	r6220|\
+	netgear,r6350)
 		wan_mac=$(mtd_get_mac_binary factory 4)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;

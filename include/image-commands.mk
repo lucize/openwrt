@@ -49,6 +49,18 @@ define Build/eva-image
 	mv $@.new $@
 endef
 
+define Build/seama
+	$(STAGING_DIR_HOST)/bin/seama -i $@ \
+		-m "dev=/dev/mtdblock/$(SEAMA_MTDBLOCK)" -m "type=firmware"
+	mv $@.seama $@
+endef
+
+define Build/seama-seal
+	$(STAGING_DIR_HOST)/bin/seama -i $@ -s $@.seama \
+		-m "signature=$(SEAMA_SIGNATURE)"
+	mv $@.seama $@
+endef
+
 define Build/zyxel-ras-image
 	let \
 		newsize="$(subst k,* 1024,$(RAS_ROOTFS_SIZE))"; \
@@ -90,6 +102,10 @@ define Build/append-squashfs-fakeroot-be
 	cat $@.fakesquashfs >> $@
 endef
 
+define Build/append-string
+	echo -n $(1) >> $@
+endef
+
 # append a fake/empty uImage header, to fool bootloaders rootfs integrity check
 # for example
 define Build/append-uImage-fakehdr
@@ -114,16 +130,6 @@ define Build/tplink-safeloader
 		$(wordlist 2,$(words $(1)),$(1)) \
 		$(if $(findstring sysupgrade,$(word 1,$(1))),-S) && mv $@.new $@ || rm -f $@
 endef
-
-define Build/mksercommfw
-	-$(STAGING_DIR_HOST)/bin/mksercommfw \
-		$@ \
-		$(KERNEL_OFFSET) \
-		$(HWID) \
-		$(HWVER) \
-		$(SWVER)
-endef
-
 
 define Build/append-dtb
 	cat $(KDIR)/image-$(firstword $(DEVICE_DTS)).dtb >> $@
@@ -160,6 +166,16 @@ endef
 define Build/gzip
 	gzip -f -9n -c $@ $(1) > $@.new
 	@mv $@.new $@
+endef
+
+define Build/zip
+	mkdir $@.tmp
+	mv $@ $@.tmp/$(1)
+
+	zip -j -X \
+		$(if $(SOURCE_DATE_EPOCH),--mtime="$(SOURCE_DATE_EPOCH)") \
+		$@ $@.tmp/$(if $(1),$(1),$@)
+	rm -rf $@.tmp
 endef
 
 define Build/jffs2
@@ -238,6 +254,11 @@ define Build/pad-offset
 	mv $@.new $@
 endef
 
+define Build/xor-image
+	$(STAGING_DIR_HOST)/bin/xorimage -i $@ -o $@.xor $(1)
+	mv $@.xor $@
+endef
+
 define Build/check-size
 	@[ $$(($(subst k,* 1024,$(subst m, * 1024k,$(1))))) -ge "$$(stat -c%s $@)" ] || { \
 		echo "WARNING: Image file $@ is too big" >&2; \
@@ -251,6 +272,13 @@ define Build/combined-image
 		"$@" \
 		"$@.new"
 	@mv $@.new $@
+endef
+
+define Build/linksys-image
+	$(TOPDIR)/scripts/linksys-image.sh \
+		"$(call param_get_default,type,$(1),$(DEVICE_NAME))" \
+		$@ $@.new
+		mv $@.new $@
 endef
 
 define Build/openmesh-image
