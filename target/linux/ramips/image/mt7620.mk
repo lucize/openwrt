@@ -56,7 +56,7 @@ define Device/alfa-network_tube-e4g
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := ALFA Network Tube-E4G
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci uboot-envtools uqmi \
-	-iwinfo -kmod-rt2800-pci -kmod-rt2800-soc -wpad-basic
+	-iwinfo -kmod-rt2800-soc -wpad-basic
 endef
 TARGET_DEVICES += alfa-network_tube-e4g
 
@@ -358,6 +358,15 @@ define Device/hc5861
 endef
 TARGET_DEVICES += hc5861
 
+define Device/head-weblink_hdrm200
+  DTS := HDRM200
+  IMAGE_SIZE := 16064k
+  DEVICE_TITLE := Head Weblink HDRM2000
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620 \
+		     uqmi kmod-usb-serial kmod-usb-serial-option
+endef
+TARGET_DEVICES += head-weblink_hdrm200
+
 define Device/iodata_wn-ac1167gr
   DTS := WN-AC1167GR
   DEVICE_TITLE := I-O DATA WN-AC1167GR
@@ -565,6 +574,7 @@ TARGET_DEVICES += phicomm_k2g
 define Device/rp-n53
   DTS := RP-N53
   DEVICE_TITLE := Asus RP-N53
+  DEVICE_PACKAGES := kmod-rt2800-pci
 endef
 TARGET_DEVICES += rp-n53
 
@@ -607,6 +617,42 @@ define Device/edimax_br-6478ac-v2
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += edimax_br-6478ac-v2
+
+define Device/edimax_ew-7476rpc
+  DTS := EW-7476RPC
+  DEVICE_TITLE := Edimax EW-7476RPC
+  BLOCKSIZE := 4k
+  IMAGE_SIZE := 7744k
+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
+        edimax-header -s CSYS -m RN79 -f 0x70000 -S 0x01100000 | pad-rootfs | \
+        append-metadata | check-size $$$$(IMAGE_SIZE)
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-phy-realtek
+endef
+TARGET_DEVICES += edimax_ew-7476rpc
+
+define Device/edimax_ew-7478ac
+  DTS := EW-7478AC
+  DEVICE_TITLE := Edimax EW-7478AC
+  BLOCKSIZE := 4k
+  IMAGE_SIZE := 7744k
+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
+        edimax-header -s CSYS -m RN70 -f 0x70000 -S 0x01100000 | pad-rootfs | \
+        append-metadata | check-size $$$$(IMAGE_SIZE)
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-phy-realtek
+endef
+TARGET_DEVICES += edimax_ew-7478ac
+
+define Device/edimax_ew-7478apc
+  DTS := EW-7478APC
+  DEVICE_TITLE := Edimax EW-7478APC
+  BLOCKSIZE := 4k
+  IMAGE_SIZE := 7744k
+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
+        edimax-header -s CSYS -m RN75 -f 0x70000 -S 0x01100000 | pad-rootfs | \
+        append-metadata | check-size $$$$(IMAGE_SIZE)
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += edimax_ew-7478apc
 
 define Device/tplink_c2-v1
   $(Device/Archer)
@@ -668,6 +714,7 @@ define Device/whr-600d
   DTS := WHR-600D
   IMAGE_SIZE := 6848k
   DEVICE_TITLE := Buffalo WHR-600D
+  DEVICE_PACKAGES := kmod-rt2800-pci
 endef
 TARGET_DEVICES += whr-600d
 
@@ -808,6 +855,15 @@ define Device/zbt-we826-32M
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620
 endef
 TARGET_DEVICES += zbt-we826-32M
+
+define Device/zbtlink_zbt-we826-e
+  DTS := ZBT-WE826-E
+  IMAGE_SIZE := 32448k
+  DEVICE_TITLE := Zbtlink ZBT-WE826-E
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620 uqmi \
+		     kmod-usb-serial kmod-usb-serial-option
+endef
+TARGET_DEVICES += zbtlink_zbt-we826-e
 
 define Device/zbt-wr8305rt
   DTS := ZBT-WR8305RT

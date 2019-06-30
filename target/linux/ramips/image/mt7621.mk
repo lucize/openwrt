@@ -235,6 +235,15 @@ define Device/k2p
 endef
 TARGET_DEVICES += k2p
 
+define Device/totolink_a7000r
+  DTS := TOTOLINK-A7000R
+  IMAGE_SIZE := 16064k
+  UIMAGE_NAME := C8340R1C-9999
+  DEVICE_TITLE := TOTOLINK A7000R
+  DEVICE_PACKAGES := kmod-mt7615e wpad-basic
+endef
+TARGET_DEVICES += totolink_a7000r
+
 define Device/xiaomi_mir3p
   DTS := MIR3P
   BLOCKSIZE := 128k
@@ -435,6 +444,14 @@ define Device/sk-wb8
 endef
 TARGET_DEVICES += sk-wb8
 
+define Device/telco-electronics_x1
+  DTS := Telco-Electronics-X1
+  IMAGE_SIZE := 16064k
+  DEVICE_TITLE := Telco Electronics X1
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt76 wpad-basic
+endef
+TARGET_DEVICES += telco-electronics_x1
+
 define Device/timecloud
   DTS := Timecloud
   DEVICE_TITLE := Thunder Timecloud
@@ -531,9 +548,19 @@ TARGET_DEVICES += mqmaker_witi-512m
 
 define Device/wndr3700v5
   DTS := WNDR3700V5
-  IMAGE_SIZE := $(ralink_default_fw_size_16M)
+  BLOCKSIZE := 64k
+  IMAGE_SIZE := 15232k
+  SERCOMM_HWID := AYB
+  SERCOMM_HWVER := A001
+  SERCOMM_SWVER := 0x1054
+  IMAGES += factory.img
+  IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs
+  IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.img := pad-extra 320k | $$(IMAGE/default) | pad-to $$$$(BLOCKSIZE) | \
+	sercom-footer | pad-to 128 | zip WNDR3700v5.bin | sercom-seal
   DEVICE_TITLE := Netgear WNDR3700v5
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 wpad-basic
+  DEVICE_PACKAGES := \
+	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
 endef
 TARGET_DEVICES += wndr3700v5
 
@@ -622,3 +649,13 @@ define Device/zbt-wg3526-32M
 	kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
 endef
 TARGET_DEVICES += zbt-wg3526-32M
+
+define Device/asiarf_ap7621-001
+  DTS := AP7621-001
+  IMAGE_SIZE := $(ralink_default_fw_size_16M)
+  DEVICE_TITLE := AsiaRF AP7621-001
+  DEVICE_PACKAGES := \
+	kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3
+endef
+TARGET_DEVICES += asiarf_ap7621-001
+
