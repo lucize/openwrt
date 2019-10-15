@@ -1,45 +1,77 @@
 --- a/nl80211.h
 +++ b/nl80211.h
-@@ -2299,6 +2299,12 @@ enum nl80211_commands {
-  *	This is also used for capability advertisement in the wiphy information,
-  *	with the appropriate sub-attributes.
+@@ -657,9 +657,7 @@
+  *	is used during CSA period.
+  * @NL80211_CMD_FRAME_WAIT_CANCEL: When an off-channel TX was requested, this
+  *	command may be used with the corresponding cookie to cancel the wait
+- *	time if it is known that it is no longer necessary.  This command is
+- *	also sent as an event whenever the driver has completed the off-channel
+- *	wait time.
++ *	time if it is known that it is no longer necessary.
+  * @NL80211_CMD_ACTION: Alias for @NL80211_CMD_FRAME for backward compatibility.
+  * @NL80211_CMD_FRAME_TX_STATUS: Report TX status of a management frame
+  *	transmitted with %NL80211_CMD_FRAME. %NL80211_ATTR_COOKIE identifies
+@@ -2358,8 +2356,8 @@ enum nl80211_commands {
   *
-+ * @NL80211_ATTR_AIRTIME_WEIGHT: Station's weight when scheduled by the airtime
-+ *	scheduler.
-+ *
+  * @NL80211_ATTR_TWT_RESPONDER: Enable target wait time responder support.
+  *
+- * @NL80211_ATTR_HE_OBSS_PD: nested attribute for OBSS Packet Detection
+- *	functionality.
 + * @NL80211_ATTR_WIPHY_ANTENNA_GAIN: Configured antenna gain. Used to reduce
 + *	transmit power to stay within regulatory limits. u32, dBi.
-+ *
+  *
   * @NUM_NL80211_ATTR: total number of nl80211_attrs available
   * @NL80211_ATTR_MAX: highest attribute number currently defined
-  * @__NL80211_ATTR_AFTER_LAST: internal use
-@@ -2748,6 +2754,10 @@ enum nl80211_attrs {
+@@ -2818,7 +2816,7 @@ enum nl80211_attrs {
  
- 	NL80211_ATTR_PEER_MEASUREMENTS,
+ 	NL80211_ATTR_TWT_RESPONDER,
  
-+	NL80211_ATTR_AIRTIME_WEIGHT,
-+
+-	NL80211_ATTR_HE_OBSS_PD,
 +	NL80211_ATTR_WIPHY_ANTENNA_GAIN,
-+
+ 
  	/* add attributes here, update the policy in nl80211.c */
  
- 	__NL80211_ATTR_AFTER_LAST,
-@@ -3125,6 +3135,9 @@ enum nl80211_sta_bss_param {
-  *	might not be fully accurate.
-  * @NL80211_STA_INFO_CONNECTED_TO_GATE: set to true if STA has a path to a
-  *	mesh gate (u8, 0 or 1)
-+ * @NL80211_STA_INFO_TX_DURATION: aggregate PPDU duration for all frames
-+ *	sent to the station (u64, usec)
-+ * @NL80211_STA_INFO_AIRTIME_WEIGHT: current airtime weight for station (u16)
-  * @__NL80211_STA_INFO_AFTER_LAST: internal
-  * @NL80211_STA_INFO_MAX: highest possible station info attribute
-  */
-@@ -3168,6 +3181,8 @@ enum nl80211_sta_info {
- 	NL80211_STA_INFO_RX_MPDUS,
- 	NL80211_STA_INFO_FCS_ERROR_COUNT,
- 	NL80211_STA_INFO_CONNECTED_TO_GATE,
-+	NL80211_STA_INFO_TX_DURATION,
-+	NL80211_STA_INFO_AIRTIME_WEIGHT,
+@@ -3843,6 +3841,8 @@ enum nl80211_user_reg_hint_type {
+  * @NL80211_SURVEY_INFO_TIME_SCAN: time the radio spent for scan
+  *	(on this channel or globally)
+  * @NL80211_SURVEY_INFO_PAD: attribute used for padding for 64-bit alignment
++ * @NL80211_SURVEY_INFO_TIME_BSS_RX: amount of time the radio spent
++ *	receiving local BSS data
+  * @NL80211_SURVEY_INFO_MAX: highest survey info attribute number
+  *	currently defined
+  * @__NL80211_SURVEY_INFO_AFTER_LAST: internal use
+@@ -3859,6 +3859,7 @@ enum nl80211_survey_info {
+ 	NL80211_SURVEY_INFO_TIME_TX,
+ 	NL80211_SURVEY_INFO_TIME_SCAN,
+ 	NL80211_SURVEY_INFO_PAD,
++	NL80211_SURVEY_INFO_TIME_BSS_RX,
  
  	/* keep last */
- 	__NL80211_STA_INFO_AFTER_LAST,
+ 	__NL80211_SURVEY_INFO_AFTER_LAST,
+@@ -6495,26 +6496,4 @@ enum nl80211_peer_measurement_ftm_resp {
+ 	NL80211_PMSR_FTM_RESP_ATTR_MAX = NUM_NL80211_PMSR_FTM_RESP_ATTR - 1
+ };
+ 
+-/**
+- * enum nl80211_obss_pd_attributes - OBSS packet detection attributes
+- * @__NL80211_HE_OBSS_PD_ATTR_INVALID: Invalid
+- *
+- * @NL80211_HE_OBSS_PD_ATTR_MIN_OFFSET: the OBSS PD minimum tx power offset.
+- * @NL80211_HE_OBSS_PD_ATTR_MAX_OFFSET: the OBSS PD maximum tx power offset.
+- *
+- * @__NL80211_HE_OBSS_PD_ATTR_LAST: Internal
+- * @NL80211_HE_OBSS_PD_ATTR_MAX: highest OBSS PD attribute.
+- */
+-enum nl80211_obss_pd_attributes {
+-	__NL80211_HE_OBSS_PD_ATTR_INVALID,
+-
+-	NL80211_HE_OBSS_PD_ATTR_MIN_OFFSET,
+-	NL80211_HE_OBSS_PD_ATTR_MAX_OFFSET,
+-
+-	/* keep last */
+-	__NL80211_HE_OBSS_PD_ATTR_LAST,
+-	NL80211_HE_OBSS_PD_ATTR_MAX = __NL80211_HE_OBSS_PD_ATTR_LAST - 1,
+-};
+-
+-
+ #endif /* __LINUX_NL80211_H */
