@@ -21,7 +21,6 @@
 			gpios = <&gpio2 0 GPIO_ACTIVE_HIGH>;
 		};
 
-
 		blue-wifi {
 			label = "wd03:blue:wifi";
 			gpios = <&gpio3 0 GPIO_ACTIVE_HIGH>;
@@ -29,12 +28,11 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		reset {
 			label = "reset";
-			gpios = <&gpio2 1 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 	};
@@ -109,11 +107,9 @@
 	ralink,mtd-eeprom = <&factory 0>;
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "wled", "ephy";
-			ralink,function = "gpio";
-		};
+&state_default {
+	gpio {
+		ralink,group = "wled", "ephy";
+		ralink,function = "gpio";
 	};
 };

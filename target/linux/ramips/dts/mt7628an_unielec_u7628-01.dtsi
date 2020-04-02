@@ -52,8 +52,8 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
+
 		reset {
 			label = "reset";
 			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
@@ -126,14 +126,11 @@
 
 &wmac {
 	status = "okay";
-	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "gpio", "p0led_an", "p1led_an", "p2led_an", "p3led_an", "p4led_an", "refclk", "wdt", "wled_an";
-			ralink,function = "gpio";
-		};
+&state_default {
+	gpio {
+		ralink,group = "gpio", "p0led_an", "p1led_an", "p2led_an", "p3led_an", "p4led_an", "refclk", "wdt", "wled_an";
+		ralink,function = "gpio";
 	};
 };

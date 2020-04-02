@@ -15,8 +15,7 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		reset {
 			label = "reset";
@@ -35,12 +34,10 @@
 	};
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "i2c";
-			ralink,function = "gpio";
-		};
+&state_default {
+	gpio {
+		ralink,group = "i2c";
+		ralink,function = "gpio";
 	};
 };
 
@@ -91,4 +88,3 @@
 &wmac {
 	status = "okay";
 };
-

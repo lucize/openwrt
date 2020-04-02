@@ -499,7 +499,7 @@ platform_check_image() {
 		local magic_ver="0100"
 
 		case "$board" in
-		tl-wdr6500-v2)
+		tl-wdr3320-v2|tl-wdr6500-v2)
 			magic_ver="0200"
 			;;
 		esac
@@ -586,6 +586,7 @@ platform_check_image() {
 		return $?
 		;;
 	cpe210|\
+	cpe510|\
 	eap120|\
 	wbs210|\
 	wbs510)
@@ -597,19 +598,9 @@ platform_check_image() {
 		tplink_pharos_check_image "$1" "01000000" "$(tplink_pharos_v2_get_model_string)" '\0\xff\r' && return 0
 		return 1
 		;;
-	cpe510)
-		local modelstr="$(tplink_pharos_v2_get_model_string)"
-		tplink_pharos_board_detect $modelstr
-		case $AR71XX_MODEL in
-		'TP-Link CPE510 v2.0')
-			tplink_pharos_check_image "$1" "7f454c46" "$modelstr" '\0\xff\r' && return 0
-			return 1
-			;;
-		*)
-			tplink_pharos_check_image "$1" "7f454c46" "$(tplink_pharos_get_model_string)" '' && return 0
-			return 1
-			;;
-		esac
+	cpe510-v2)
+		tplink_pharos_check_image "$1" "7f454c46" "$(tplink_pharos_v2_get_model_string)" '\0\xff\r' && return 0
+		return 1
 		;;
 	a40|\
 	a60|\
@@ -751,8 +742,13 @@ platform_do_upgrade_mikrotik_rb() {
 	local fw_mtd=$(find_mtd_part kernel)
 	fw_mtd="${fw_mtd/block/}"
 	[ -n "$fw_mtd" ] || return
+
+	local board_dir=$(tar tf "$1" | grep -m 1 '^sysupgrade-.*/$')
+	board_dir=${board_dir%/}
+	[ -n "$board_dir" ] || return
+
 	mtd erase kernel
-	tar xf "$1" sysupgrade-routerboard/kernel -O | nandwrite -o "$fw_mtd" -
+	tar xf "$1" ${board_dir}/kernel -O | nandwrite -o "$fw_mtd" -
 
 	nand_do_upgrade "$1"
 }

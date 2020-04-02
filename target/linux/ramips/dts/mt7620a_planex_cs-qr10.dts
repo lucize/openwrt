@@ -26,8 +26,7 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		s1 {
 			label = "reset";
@@ -117,16 +116,14 @@
 	status = "okay";
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "spi refclk", "rgmii1";
-			ralink,function = "gpio";
-		};
-		wdt {
-			ralink,group = "wdt";
-			ralink,function = "wdt refclk";
-		};
+&state_default {
+	gpio {
+		ralink,group = "spi refclk", "rgmii1";
+		ralink,function = "gpio";
+	};
+	wdt {
+		ralink,group = "wdt";
+		ralink,function = "wdt refclk";
 	};
 };
 

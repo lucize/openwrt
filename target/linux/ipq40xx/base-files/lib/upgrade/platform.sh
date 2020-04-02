@@ -47,8 +47,13 @@ zyxel_do_upgrade() {
 platform_do_upgrade() {
 	case "$(board_name)" in
 	8dev,jalapeno |\
+	aruba,ap-303 |\
+	aruba,ap-303h |\
 	avm,fritzbox-7530 |\
+	avm,fritzrepeater-1200 |\
 	avm,fritzrepeater-3000 |\
+	cilab,meshpoint-one |\
+	engenius,eap2200 |\
 	qxwlan,e2600ac-c2)
 		nand_do_upgrade "$1"
 		;;
@@ -70,6 +75,9 @@ platform_do_upgrade() {
 	asus,rt-ac58u)
 		CI_UBIPART="UBI_DEV"
 		CI_KERNPART="linux"
+		nand_do_upgrade "$1"
+		;;
+	compex,wpj419)
 		nand_do_upgrade "$1"
 		;;
 	linksys,ea6350v3 |\

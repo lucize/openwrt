@@ -16,8 +16,7 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		wps {
 			label = "wps";
@@ -144,11 +143,9 @@
 	};
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		default {
-			ralink,group = "spi refclk", "i2c", "ephy", "wled";
-			ralink,function = "gpio";
-		};
+&state_default {
+	default {
+		ralink,group = "spi refclk", "i2c", "ephy", "wled";
+		ralink,function = "gpio";
 	};
 };

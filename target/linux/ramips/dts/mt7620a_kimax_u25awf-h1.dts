@@ -17,8 +17,7 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		reset {
 			label = "reset";
@@ -106,11 +105,9 @@
 	ralink,mtd-eeprom = <&factory 0>;
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		default {
-			ralink,group = "uartf", "ephy", "wled";
-			ralink,function = "gpio";
-		};
+&state_default {
+	default {
+		ralink,group = "uartf", "ephy", "wled";
+		ralink,function = "gpio";
 	};
 };

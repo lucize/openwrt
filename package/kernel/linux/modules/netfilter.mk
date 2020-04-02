@@ -152,7 +152,7 @@ define KernelPackage/nf-flow
 	CONFIG_NETFILTER_INGRESS=y \
 	CONFIG_NF_FLOW_TABLE \
 	CONFIG_NF_FLOW_TABLE_HW
-  DEPENDS:=+kmod-nf-conntrack @!LINUX_4_9
+  DEPENDS:=+kmod-nf-conntrack
   FILES:= \
 	$(LINUX_DIR)/net/netfilter/nf_flow_table.ko \
 	$(LINUX_DIR)/net/netfilter/nf_flow_table_hw.ko
@@ -245,7 +245,7 @@ $(eval $(call KernelPackage,ipt-filter))
 
 define KernelPackage/ipt-offload
   TITLE:=Netfilter routing/NAT offload support
-  KCONFIG:=CONFIG_NETFILTER_XT_TARGET_FLOWOFFLOAD
+  KCONFIG:=$(KCONFIG_IPT_FLOW)
   FILES:=$(foreach mod,$(IPT_FLOW-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_FLOW-m)))
   $(call AddDepends/ipt,+kmod-nf-flow)
@@ -540,7 +540,7 @@ define KernelPackage/nf-nathelper-extra
   KCONFIG:=$(KCONFIG_NF_NATHELPER_EXTRA)
   FILES:=$(foreach mod,$(NF_NATHELPER_EXTRA-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_NATHELPER_EXTRA-m)))
-  DEPENDS:=+kmod-nf-nat +kmod-lib-textsearch +kmod-ipt-raw +LINUX_4_19:kmod-asn1-decoder
+  DEPENDS:=+kmod-nf-nat +kmod-lib-textsearch +kmod-ipt-raw +!LINUX_4_14:kmod-asn1-decoder
 endef
 
 define KernelPackage/nf-nathelper-extra/description
@@ -646,13 +646,8 @@ $(eval $(call KernelPackage,ipt-led))
 define KernelPackage/ipt-tproxy
   TITLE:=Transparent proxying support
   DEPENDS+=+kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +IPV6:kmod-ip6tables
-  KCONFIG:= \
-  	CONFIG_NF_SOCKET_IPV4 \
-  	CONFIG_NF_SOCKET_IPV6 \
-  	CONFIG_NETFILTER_XT_MATCH_SOCKET \
-  	CONFIG_NETFILTER_XT_TARGET_TPROXY
-  FILES:= \
-  	$(foreach mod,$(IPT_TPROXY-m),$(LINUX_DIR)/net/$(mod).ko)
+  KCONFIG:=$(KCONFIG_IPT_TPROXY)
+  FILES:=$(foreach mod,$(IPT_TPROXY-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_TPROXY-m)))
   $(call AddDepends/ipt)
 endef
@@ -666,11 +661,8 @@ $(eval $(call KernelPackage,ipt-tproxy))
 define KernelPackage/ipt-tee
   TITLE:=TEE support
   DEPENDS:=+kmod-ipt-conntrack
-  KCONFIG:= \
-  	CONFIG_NETFILTER_XT_TARGET_TEE
-  FILES:= \
-  	$(LINUX_DIR)/net/netfilter/xt_TEE.ko \
-  	$(foreach mod,$(IPT_TEE-m),$(LINUX_DIR)/net/$(mod).ko)
+  KCONFIG:=$(KCONFIG_IPT_TEE)
+  FILES:=$(foreach mod,$(IPT_TEE-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir nf_tee $(IPT_TEE-m)))
   $(call AddDepends/ipt)
 endef
@@ -684,11 +676,8 @@ $(eval $(call KernelPackage,ipt-tee))
 
 define KernelPackage/ipt-u32
   TITLE:=U32 support
-  KCONFIG:= \
-  	CONFIG_NETFILTER_XT_MATCH_U32
-  FILES:= \
-  	$(LINUX_DIR)/net/netfilter/xt_u32.ko \
-  	$(foreach mod,$(IPT_U32-m),$(LINUX_DIR)/net/$(mod).ko)
+  KCONFIG:=$(KCONFIG_IPT_U32)
+  FILES:=$(foreach mod,$(IPT_U32-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir nf_tee $(IPT_U32-m)))
   $(call AddDepends/ipt)
 endef
@@ -701,11 +690,8 @@ $(eval $(call KernelPackage,ipt-u32))
 
 define KernelPackage/ipt-checksum
   TITLE:=CHECKSUM support
-  KCONFIG:= \
-  	CONFIG_NETFILTER_XT_TARGET_CHECKSUM
-  FILES:= \
-  	$(LINUX_DIR)/net/netfilter/xt_CHECKSUM.ko \
-  	$(foreach mod,$(IPT_CHECKSUM-m),$(LINUX_DIR)/net/$(mod).ko)
+  KCONFIG:=$(KCONFIG_IPT_CHECKSUM)
+  FILES:=$(foreach mod,$(IPT_CHECKSUM-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_CHECKSUM-m)))
   $(call AddDepends/ipt)
 endef
@@ -1063,7 +1049,7 @@ $(eval $(call KernelPackage,ipt-rpfilter))
 define KernelPackage/nft-core
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter nf_tables support
-  DEPENDS:=+kmod-nfnetlink +kmod-nf-reject +kmod-nf-reject6 +kmod-nf-conntrack6
+  DEPENDS:=+kmod-nfnetlink +kmod-nf-reject +kmod-nf-reject6 +kmod-nf-conntrack6 +LINUX_5_4:kmod-nf-nat
   FILES:=$(foreach mod,$(NFT_CORE-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_CORE-m)))
   KCONFIG:= \

@@ -194,6 +194,8 @@ _procd_add_jail() {
 		procfs)	json_add_boolean "procfs" "1";;
 		sysfs)	json_add_boolean "sysfs" "1";;
 		ronly)	json_add_boolean "ronly" "1";;
+		requirejail)	json_add_boolean "requirejail" "1";;
+		netns)	json_add_boolean "netns" "1";;
 		esac
 	done
 	json_add_object "mount"
@@ -407,12 +409,12 @@ _procd_add_instance() {
 
 procd_running() {
 	local service="$1"
-	local instance="${2:-instance1}"
-	local running
+	local instance="${2:-*}"
+	[ "$instance" = "*" ] || instance="'$instance'"
 
 	json_init
 	json_add_string name "$service"
-	running=$(_procd_ubus_call list | jsonfilter -e "@['$service'].instances['$instance'].running")
+	local running=$(_procd_ubus_call list | jsonfilter -l 1 -e "@['$service'].instances[$instance].running")
 
 	[ "$running" = "true" ]
 }

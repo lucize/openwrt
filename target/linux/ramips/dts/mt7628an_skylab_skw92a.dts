@@ -34,8 +34,7 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		reset {
 			label = "reset";
@@ -45,12 +44,10 @@
 	};
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "wdt", "refclk", "wled_an";
-			ralink,function = "gpio";
-		};
+&state_default {
+	gpio {
+		ralink,group = "wdt", "refclk", "wled_an";
+		ralink,function = "gpio";
 	};
 };
 
@@ -60,7 +57,6 @@
 
 &wmac {
 	status = "okay";
-	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
 &spi0 {

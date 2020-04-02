@@ -73,8 +73,7 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		wps {
 			label = "wps";
@@ -233,11 +232,9 @@
 	mtd-mac-address = <&factory 0x00000004>;
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "sdhci", "rgmii2", "jtag";
-			ralink,function = "gpio";
-		};
+&state_default {
+	gpio {
+		ralink,group = "sdhci", "rgmii2", "jtag";
+		ralink,function = "gpio";
 	};
 };

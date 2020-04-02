@@ -14,7 +14,6 @@
 		gpio-sck = <&gpio0 2 GPIO_ACTIVE_HIGH>;
 		realtek,extif1 = <1 0 1 1 1 1 1 1 2>;
 	};
-
 };
 
 &gpio1 {
@@ -74,12 +73,10 @@
 	};
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "i2c", "jtag", "uartf";
-			ralink,function = "gpio";
-		};
+&state_default {
+	gpio {
+		ralink,group = "i2c", "jtag", "uartf";
+		ralink,function = "gpio";
 	};
 };
 

@@ -17,8 +17,7 @@
 	};
 
 	keys {
-		compatible = "gpio-keys-polled";
-		poll-interval = <20>;
+		compatible = "gpio-keys";
 
 		wps {
 			label = "wps";
@@ -171,11 +170,9 @@
 	};
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "uartf", "i2c";
-			ralink,function = "gpio";
-		};
+&state_default {
+	gpio {
+		ralink,group = "uartf", "i2c";
+		ralink,function = "gpio";
 	};
 };

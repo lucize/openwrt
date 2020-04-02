@@ -73,7 +73,7 @@
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
-		spi-max-frequency = <104000000>;
+		spi-max-frequency = <50000000>;
 		reg = <0>;
 
 		partitions {
@@ -132,5 +132,4 @@
 &wmac {
 	status = "okay";
 	mtd-cal-data = <&art 0x1000>;
-	mtd-mac-address = <&art 0x1002>;
 };
