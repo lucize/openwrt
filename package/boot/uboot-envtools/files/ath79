@@ -52,11 +52,13 @@ glinet,gl-ar150)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x8000" "0x10000"
 	;;
 netgear,wndr3700|\
-netgear,wndr3700-v2)
+netgear,wndr3700-v2|\
+netgear,wndrmac-v1)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x10000"
 	;;
 netgear,wndr3700-v4|\
-netgear,wndr4300)
+netgear,wndr4300|\
+netgear,wndr4300sw)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x40000" "0x20000"
 	;;
 qihoo,c301)

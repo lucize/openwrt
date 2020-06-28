@@ -14,6 +14,30 @@ define Device/alfa-network_awusfree1
 endef
 TARGET_DEVICES += alfa-network_awusfree1
 
+define Device/asus_rt-n10p-v3
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Asus
+  DEVICE_MODEL := RT-N10P
+  DEVICE_VARIANT := V3
+endef
+TARGET_DEVICES += asus_rt-n10p-v3
+
+define Device/asus_rt-n11p-b1
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Asus
+  DEVICE_MODEL := RT-N11P
+  DEVICE_VARIANT := B1
+endef
+TARGET_DEVICES += asus_rt-n11p-b1
+
+define Device/asus_rt-n12-vp-b1
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Asus
+  DEVICE_MODEL := RT-N12 VP
+  DEVICE_VARIANT := B1
+endef
+TARGET_DEVICES += asus_rt-n12-vp-b1
+
 define Device/buffalo_wcr-1166ds
   IMAGE_SIZE := 7936k
   BUFFALO_TAG_PLATFORM := MTK
@@ -165,6 +189,25 @@ define Device/mercury_mac1200r-v2
 endef
 TARGET_DEVICES += mercury_mac1200r-v2
 
+define Device/netgear_r6080
+  BLOCKSIZE := 64k
+  IMAGE_SIZE := 7552k
+  DEVICE_VENDOR := NETGEAR
+  DEVICE_MODEL := R6080
+  DEVICE_PACKAGES := kmod-mt76x2
+  SERCOMM_HWID := CFR
+  SERCOMM_HWVER := A001
+  SERCOMM_SWVER := 0x0040
+  IMAGES += factory.img
+  IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
+	pad-rootfs
+  IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size
+  IMAGE/factory.img := pad-extra 576k | $$(IMAGE/default) | \
+	pad-to $$$$(BLOCKSIZE) | sercom-footer | pad-to 128 | zip R6080.bin | \
+	sercom-seal
+endef
+TARGET_DEVICES += netgear_r6080
+
 define Device/netgear_r6120
   BLOCKSIZE := 64k
   IMAGE_SIZE := 15744k
@@ -175,7 +218,7 @@ define Device/netgear_r6120
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0040
   IMAGES += factory.img
-  IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE)| append-rootfs | \
+  IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs
   IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size
   IMAGE/factory.img := pad-extra 576k | $$(IMAGE/default) | \

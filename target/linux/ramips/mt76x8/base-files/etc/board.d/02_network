@@ -26,6 +26,18 @@ ramips_setup_interfaces()
 		ucidef_add_switch_attr "switch0" "enable" "false"
 		ucidef_set_interface_lan "eth0"
 		;;
+	asus,rt-n10p-v3|\
+	asus,rt-n11p-b1|\
+	asus,rt-n12-vp-b1|\
+	hiwifi,hc5661a|\
+	mediatek,mt7628an-eval-board|\
+	mercury,mac1200r-v2|\
+	totolink,lr1200|\
+	wavlink,wl-wn570ha1|\
+	wavlink,wl-wn575a3)
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
+		;;
 	buffalo,wcr-1166ds)
 		ucidef_add_switch "switch0" \
 			"3:lan" "4:wan" "6@eth0"
@@ -67,15 +79,6 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
 		;;
-	hiwifi,hc5661a|\
-	mediatek,mt7628an-eval-board|\
-	mercury,mac1200r-v2|\
-	totolink,lr1200|\
-	wavlink,wl-wn570ha1|\
-	wavlink,wl-wn575a3)
-		ucidef_add_switch "switch0" \
-			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
-		;;
 	hiwifi,hc5761a)
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "4:wan" "6@eth0"
@@ -89,6 +92,7 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "0:wan" "6@eth0"
 		;;
+	netgear,r6080|\
 	netgear,r6120)
 		ucidef_add_switch "switch0" \
 			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "6@eth0"
@@ -143,6 +147,7 @@ ramips_setup_macs()
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
 	duzun,dm06|\
+	netgear,r6080|\
 	netgear,r6120|\
 	wrtnode,wrtnode2p|\
 	wrtnode,wrtnode2r|\

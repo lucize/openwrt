@@ -295,6 +295,41 @@ endef
 $(eval $(call KernelPackage,gpio-pcf857x))
 
 
+define KernelPackage/gpio-it87
+  SUBMENU:=$(OTHER_MENU)
+  DEPENDS:=@GPIO_SUPPORT @TARGET_x86
+  TITLE:=GPIO support for IT87xx Super I/O chips
+  KCONFIG:=CONFIG_GPIO_IT87
+  FILES:=$(LINUX_DIR)/drivers/gpio/gpio-it87.ko
+  AUTOLOAD:=$(call AutoLoad,25,gpio-it87,1)
+endef
+
+define KernelPackage/gpio-it87/description
+  This driver is tested with ITE IT8728 and IT8732 Super I/O chips, and
+  supports the IT8761E, IT8613, IT8620E, and IT8628E Super I/O chips as
+  well.
+endef
+
+$(eval $(call KernelPackage,gpio-it87))
+
+
+define KernelPackage/gpio-amd-fch
+  SUBMENU:=$(OTHER_MENU)
+  DEPENDS:=@GPIO_SUPPORT @TARGET_x86
+  TITLE:=GPIO support for AMD Fusion Controller Hub (G-series SOCs)
+  KCONFIG:=CONFIG_GPIO_AMD_FCH
+  FILES:=$(LINUX_DIR)/drivers/gpio/gpio-amd-fch.ko
+  AUTOLOAD:=$(call AutoLoad,25,gpio-amd-fch,1)
+endef
+
+define KernelPackage/gpio-amd-fch/description
+  This option enables driver for GPIO on AMDs Fusion Controller Hub,
+  as found on G-series SOCs (eg. GX-412TC)
+endef
+
+$(eval $(call KernelPackage,gpio-amd-fch))
+
+
 define KernelPackage/ppdev
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Parallel port support
@@ -371,6 +406,23 @@ define KernelPackage/mmc/description
 endef
 
 $(eval $(call KernelPackage,mmc))
+
+
+define KernelPackage/mvsdio
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Marvell MMC/SD/SDIO host driver
+  DEPENDS:=+kmod-mmc @TARGET_kirkwood
+  KCONFIG:= CONFIG_MMC_MVSDIO
+  FILES:= \
+	$(LINUX_DIR)/drivers/mmc/host/mvsdio.ko
+  AUTOLOAD:=$(call AutoProbe,mvsdio,1)
+endef
+
+define KernelPackage/mvsdio/description
+ Kernel support for the Marvell SDIO host driver.
+endef
+
+$(eval $(call KernelPackage,mvsdio))
 
 
 define KernelPackage/sdhci

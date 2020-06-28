@@ -28,7 +28,7 @@ endef
 # UBNT_BOARD e.g. one of (XS2, XS5, RS, XM)
 # UBNT_TYPE e.g. one of (BZ, XM, XW)
 # UBNT_CHIP e.g. one of (ar7240, ar933x, ar934x)
-# UBNT_VERSION e.g. one of (6.0.0, 8.5.0)
+# UBNT_VERSION e.g. one of (6.0.0, 8.5.3)
 define Device/ubnt
   DEVICE_VENDOR := Ubiquiti
   DEVICE_PACKAGES := kmod-usb2
@@ -66,7 +66,7 @@ define Device/ubnt-wa
   UBNT_BOARD := WA
   UBNT_CHIP := ar934x
   UBNT_TYPE := WA
-  UBNT_VERSION := 8.5.0
+  UBNT_VERSION := 8.5.3
 endef
 
 define Device/ubnt-xc
@@ -75,7 +75,7 @@ define Device/ubnt-xc
   UBNT_BOARD := XC
   UBNT_CHIP := qca955x
   UBNT_TYPE := XC
-  UBNT_VERSION := 8.5.0
+  UBNT_VERSION := 8.5.3
 endef
 
 define Device/ubnt-xm
@@ -159,7 +159,7 @@ TARGET_DEVICES += ubnt_edgeswitch-5xp
 define Device/ubnt_edgeswitch-8xp
   $(Device/ubnt-sw)
   DEVICE_MODEL := EdgeSwitch 8XP
-  DEVICE_PACKAGES += switch-bcm53xx-mdio
+  DEVICE_PACKAGES += kmod-switch-bcm53xx-mdio
 endef
 TARGET_DEVICES += ubnt_edgeswitch-8xp
 

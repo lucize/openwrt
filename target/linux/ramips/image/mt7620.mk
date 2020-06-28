@@ -670,6 +670,19 @@ define Device/netgear_ex3700
 endef
 TARGET_DEVICES += netgear_ex3700
 
+define Device/netgear_ex6120
+  SOC := mt7620a
+  NETGEAR_BOARD_ID := U12H319T30_NETGEAR
+  BLOCKSIZE := 4k
+  IMAGE_SIZE := 7744k
+  IMAGES += factory.chk
+  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size | netgear-chk
+  DEVICE_PACKAGES := kmod-mt76x2
+  DEVICE_VENDOR := NETGEAR
+  DEVICE_MODEL := EX6120
+endef
+TARGET_DEVICES += netgear_ex6120
+
 define Device/netgear_ex6130
   SOC := mt7620a
   NETGEAR_BOARD_ID := U12H319T50_NETGEAR
@@ -1004,6 +1017,15 @@ define Device/tplink_re210-v1
   TPLINK_FLASHLAYOUT := 8Mmtk
 endef
 TARGET_DEVICES += tplink_re210-v1
+
+define Device/trendnet_tew-810dr
+  SOC := mt7620a
+  DEVICE_PACKAGES := kmod-mt76x0e
+  DEVICE_VENDOR := TRENDnet
+  DEVICE_MODEL := TEW-810DR
+  IMAGE_SIZE := 6720k
+endef
+TARGET_DEVICES += trendnet_tew-810dr
 
 define Device/vonets_var11n-300
   SOC := mt7620n

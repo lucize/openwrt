@@ -8,7 +8,7 @@
 
 / {
 	model = "Comtrend VR-3032u";
-	compatible = "comtrend,vr-3032u", "brcm,bcm63268";
+	compatible = "comtrend,vr-3032u", "brcm,bcm63168", "brcm,bcm63268";
 
 	aliases {
 		led-boot = &led_power_green;
@@ -172,9 +172,9 @@
 			};
 
 			partition@20000 {
-				compatible = "brcm,wfi";
+				compatible = "brcm,wfi-split";
 				label = "wfi";
-				reg = <0x0020000 0x7ee0000>;
+				reg = <0x0020000 0x7ac0000>;
 			};
 		};
 	};

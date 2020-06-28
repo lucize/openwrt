@@ -1,7 +1,5 @@
-#!/bin/sh
 #
 # Copyright (C) 2007 OpenWrt.org
-#
 #
 
 . /lib/functions.sh
@@ -40,8 +38,5 @@ case "$(board_name)" in
 	telsey,magic|\
 	zyxel,p870hw-51a-v2)
 		do_fixcrc
-		;;
-	sercomm,ad1018)
-		mtd erase bootflag2
 		;;
 esac
