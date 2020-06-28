@@ -11,6 +11,7 @@ define Device/pine64_rock64
   SOC := rk3328
   UBOOT_DEVICE_NAME := rock64-rk3328
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | sdcard-img | gzip | append-metadata
+  DEVICE_PACKAGES += kmod-drm-rockchip kmod-drm-rockchip-hdmi-sound
 endef
 TARGET_DEVICES += pine64_rock64
 
