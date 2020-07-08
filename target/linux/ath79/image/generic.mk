@@ -152,6 +152,16 @@ define Device/8dev_carambola2
 endef
 TARGET_DEVICES += 8dev_carambola2
 
+define Device/8dev_lima
+  SOC := qca9531
+  DEVICE_VENDOR := 8devices
+  DEVICE_MODEL := Lima
+  DEVICE_PACKAGES := kmod-usb2
+  IMAGE_SIZE := 15616k
+  SUPPORTED_DEVICES += lima
+endef
+TARGET_DEVICES += 8dev_lima
+
 define Device/adtran_bsap1880
   SOC := ar7161
   DEVICE_VENDOR := Adtran/Bluesocket
@@ -440,6 +450,19 @@ define Device/comfast_cf-wr752ac-v1
   IMAGE_SIZE := 16192k
 endef
 TARGET_DEVICES += comfast_cf-wr752ac-v1
+
+define Device/compex_wpj344-16m
+  SOC := ar9344
+  DEVICE_PACKAGES := kmod-usb2
+  IMAGE_SIZE := 16128k
+  DEVICE_VENDOR := Compex
+  DEVICE_MODEL := WPJ344
+  DEVICE_VARIANT := 16M
+  SUPPORTED_DEVICES += wpj344
+  IMAGES += cpximg-6a08.bin
+  IMAGE/cpximg-6a08.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | mkmylofw_16m 0x690 3
+endef
+TARGET_DEVICES += compex_wpj344-16m
 
 define Device/compex_wpj531-16m
   SOC := qca9531
@@ -807,6 +830,16 @@ define Device/glinet_gl-ar750
   SUPPORTED_DEVICES += gl-ar750
 endef
 TARGET_DEVICES += glinet_gl-ar750
+
+define Device/glinet_gl-mifi
+  SOC := ar9331
+  DEVICE_VENDOR := GL.iNET
+  DEVICE_MODEL := GL-MiFi
+  DEVICE_PACKAGES := kmod-usb-chipidea2
+  IMAGE_SIZE := 16000k
+  SUPPORTED_DEVICES += gl-mifi
+endef
+TARGET_DEVICES += glinet_gl-mifi
 
 define Device/glinet_gl-x750
   SOC := qca9531
