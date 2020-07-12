@@ -81,11 +81,6 @@ define Build/iodata-mstc-header
 	)
 endef
 
-define Build/mitrastarimage
-	uimage_padhdr -l 160 -i $@ -o $@.new
-	mv $@.new $@
-endef
-
 define Build/ubnt-erx-factory-image
 	if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(KERNEL_SIZE)" ]; then \
 		echo '21001:7' > $(1).compat; \
@@ -262,6 +257,7 @@ endef
 TARGET_DEVICES += d-team_pbr-m1
 
 define Device/edimax_ra21s
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Edimax
   DEVICE_MODEL := RA21S
@@ -293,6 +289,7 @@ endef
 TARGET_DEVICES += edimax_re23s
 
 define Device/edimax_rg21s
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Edimax
   DEVICE_MODEL := Gemini AC2600 RG21S
@@ -1144,7 +1141,7 @@ define Device/zyxel_wap6805
   DEVICE_VENDOR := ZyXEL
   DEVICE_MODEL := WAP6805
   DEVICE_PACKAGES := kmod-mt7603 wpad-basic kmod-mt7621-qtn-rgmii
-  KERNEL := $(KERNEL_DTB) | uImage lzma | mitrastarimage
+  KERNEL := $(KERNEL_DTB) | uImage lzma | uimage-padhdr 160
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += zyxel_wap6805
