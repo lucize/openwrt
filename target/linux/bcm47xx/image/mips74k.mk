@@ -15,8 +15,9 @@ define Device/asus-rt-ac66u
   DEVICE_PACKAGES := kmod-b43 $(USB2_PACKAGES)
   $(Device/asus)
   PRODUCTID := RT-AC66U
+  DEFAULT := n
 endef
-#  TARGET_DEVICES += asus-rt-ac66u
+TARGET_DEVICES += asus-rt-ac66u
 
 define Device/asus-rt-n10
   DEVICE_MODEL := RT-N10
@@ -156,6 +157,7 @@ define Device/linksys-wrt160n-v3
   $(Device/linksys)
   DEVICE_ID := N150
   VERSION := 3.0.3
+  DEFAULT := n
 endef
 TARGET_DEVICES += linksys-wrt160n-v3
 
@@ -398,8 +400,9 @@ define Device/netgear-wndr3400-vcna
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H155T01_NETGEAR
   NETGEAR_REGION := 2
+  DEFAULT := n
 endef
-#  TARGET_DEVICES += netgear-wndr3400-vcna
+TARGET_DEVICES += netgear-wndr3400-vcna
 
 define Device/netgear-wndr4000
   DEVICE_MODEL := WNDR4000
@@ -466,8 +469,9 @@ define Device/netgear-wnr3500u
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H136T00_NETGEAR
   NETGEAR_REGION := 2
+  DEFAULT := n
 endef
-#  TARGET_DEVICES += netgear-wnr3500u
+TARGET_DEVICES += netgear-wnr3500u
 
 define Device/netgear-wnr3500-v2
   DEVICE_MODEL := WNR3500
@@ -486,7 +490,8 @@ define Device/netgear-wnr3500-v2-vc
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H127T70_NETGEAR
   NETGEAR_REGION := 2
+  DEFAULT := n
 endef
-#  TARGET_DEVICES += netgear-wnr3500-v2-vc
+TARGET_DEVICES += netgear-wnr3500-v2-vc
 
 TARGET_DEVICES += standard standard-noloader-nodictionarylzma
