@@ -105,7 +105,14 @@ define Build/ubnt-erx-factory-image
 	fi
 endef
 
+define Device/dsa-migration
+  DEVICE_COMPAT_VERSION := 1.1
+  DEVICE_COMPAT_MESSAGE := Config cannot be migrated from swconfig to DSA \
+	(early adopters with DSA already set up may just force-flash keeping existing config)
+endef
+
 define Device/adslr_g7
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := ADSLR
   DEVICE_MODEL := G7
@@ -114,6 +121,7 @@ endef
 TARGET_DEVICES += adslr_g7
 
 define Device/afoundry_ew1200
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := AFOUNDRY
   DEVICE_MODEL := EW1200
@@ -124,6 +132,7 @@ endef
 TARGET_DEVICES += afoundry_ew1200
 
 define Device/alfa-network_quad-e4g
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := ALFA Network
   DEVICE_MODEL := Quad-E4G
@@ -133,6 +142,7 @@ endef
 TARGET_DEVICES += alfa-network_quad-e4g
 
 define Device/asiarf_ap7621-001
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := AsiaRF
   DEVICE_MODEL := AP7621-001
@@ -141,6 +151,7 @@ endef
 TARGET_DEVICES += asiarf_ap7621-001
 
 define Device/asiarf_ap7621-nv1
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := AsiaRF
   DEVICE_MODEL := AP7621-NV1
@@ -149,6 +160,7 @@ endef
 TARGET_DEVICES += asiarf_ap7621-nv1
 
 define Device/asus_rt-ac57u
+  $(Device/dsa-migration)
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := RT-AC57U
   IMAGE_SIZE := 16064k
@@ -158,6 +170,7 @@ endef
 TARGET_DEVICES += asus_rt-ac57u
 
 define Device/asus_rt-ac65p
+  $(Device/dsa-migration)
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := RT-AC65P
   IMAGE_SIZE := 51200k
@@ -174,6 +187,7 @@ endef
 TARGET_DEVICES += asus_rt-ac65p
 
 define Device/asus_rt-ac85p
+  $(Device/dsa-migration)
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := RT-AC85P
   IMAGE_SIZE := 51200k
@@ -190,6 +204,7 @@ endef
 TARGET_DEVICES += asus_rt-ac85p
 
 define Device/buffalo_wsr-1166dhp
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE/sysupgrade.bin := trx | pad-rootfs | append-metadata
   IMAGE_SIZE := 15936k
@@ -201,6 +216,7 @@ endef
 TARGET_DEVICES += buffalo_wsr-1166dhp
 
 define Device/buffalo_wsr-2533dhpl
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 7936k
   DEVICE_VENDOR := Buffalo
@@ -213,6 +229,7 @@ endef
 TARGET_DEVICES += buffalo_wsr-2533dhpl
 
 define Device/buffalo_wsr-600dhp
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Buffalo
   DEVICE_MODEL := WSR-600DHP
@@ -222,6 +239,7 @@ endef
 TARGET_DEVICES += buffalo_wsr-600dhp
 
 define Device/dlink_dir-8xx-a1
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := D-Link
   DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
@@ -234,6 +252,7 @@ define Device/dlink_dir-8xx-a1
 endef
 
 define Device/dlink_dir-xx60-a1
+  $(Device/dsa-migration)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   KERNEL_SIZE := 4096k
@@ -257,6 +276,7 @@ endef
 TARGET_DEVICES += dlink_dir-1960-a1
 
 define Device/dlink_dir-860l-b1
+  $(Device/dsa-migration)
   $(Device/seama)
   BLOCKSIZE := 64k
   SEAMA_SIGNATURE := wrgac13_dlink.2013gui_dir860lb
@@ -295,6 +315,7 @@ endef
 TARGET_DEVICES += dlink_dir-882-a1
 
 define Device/d-team_newifi-d2
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := Newifi
@@ -305,6 +326,7 @@ endef
 TARGET_DEVICES += d-team_newifi-d2
 
 define Device/d-team_pbr-m1
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := PandoraBox
   DEVICE_MODEL := PBR-M1
@@ -315,6 +337,7 @@ endef
 TARGET_DEVICES += d-team_pbr-m1
 
 define Device/edimax_ra21s
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Edimax
@@ -329,6 +352,7 @@ endef
 TARGET_DEVICES += edimax_ra21s
 
 define Device/edimax_re23s
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 15680k
   DEVICE_VENDOR := Edimax
@@ -347,6 +371,7 @@ endef
 TARGET_DEVICES += edimax_re23s
 
 define Device/edimax_rg21s
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Edimax
@@ -359,6 +384,7 @@ endef
 TARGET_DEVICES += edimax_rg21s
 
 define Device/elecom_wrc-1167ghbk2-s
+  $(Device/dsa-migration)
   IMAGE_SIZE := 15488k
   DEVICE_VENDOR := ELECOM
   DEVICE_MODEL := WRC-1167GHBK2-S
@@ -370,6 +396,7 @@ endef
 TARGET_DEVICES += elecom_wrc-1167ghbk2-s
 
 define Device/elecom_wrc-gs
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   DEVICE_VENDOR := ELECOM
   IMAGES += factory.bin
@@ -419,6 +446,7 @@ endef
 TARGET_DEVICES += elecom_wrc-2533gst2
 
 define Device/firefly_firewrt
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Firefly
   DEVICE_MODEL := FireWRT
@@ -428,6 +456,7 @@ endef
 TARGET_DEVICES += firefly_firewrt
 
 define Device/gehua_ghl-r-001
+  $(Device/dsa-migration)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := GeHua
   DEVICE_MODEL := GHL-R-001
@@ -437,6 +466,7 @@ endef
 TARGET_DEVICES += gehua_ghl-r-001
 
 define Device/gnubee_gb-pc1
+  $(Device/dsa-migration)
   DEVICE_VENDOR := GnuBee
   DEVICE_MODEL := Personal Cloud One
   DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 -wpad-basic
@@ -445,6 +475,7 @@ endef
 TARGET_DEVICES += gnubee_gb-pc1
 
 define Device/gnubee_gb-pc2
+  $(Device/dsa-migration)
   DEVICE_VENDOR := GnuBee
   DEVICE_MODEL := Personal Cloud Two
   DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 -wpad-basic
@@ -453,6 +484,7 @@ endef
 TARGET_DEVICES += gnubee_gb-pc2
 
 define Device/hiwifi_hc5962
+  $(Device/dsa-migration)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   KERNEL_SIZE := 4096k
@@ -469,6 +501,7 @@ endef
 TARGET_DEVICES += hiwifi_hc5962
 
 define Device/iodata_wn-ax1167gr
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 15552k
   KERNEL_INITRAMFS := $$(KERNEL) | \
@@ -480,6 +513,7 @@ endef
 TARGET_DEVICES += iodata_wn-ax1167gr
 
 define Device/iodata_nand
+  $(Device/dsa-migration)
   DEVICE_VENDOR := I-O DATA
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -522,6 +556,7 @@ endef
 TARGET_DEVICES += iodata_wn-dx1167r
 
 define Device/iodata_wn-gx300gr
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 7616k
   DEVICE_VENDOR := I-O DATA
@@ -531,6 +566,7 @@ endef
 TARGET_DEVICES += iodata_wn-gx300gr
 
 define Device/iodata_wnpr2600g
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   DEVICE_VENDOR := I-O DATA
   DEVICE_MODEL := WNPR2600G
@@ -543,6 +579,7 @@ endef
 TARGET_DEVICES += iodata_wnpr2600g
 
 define Device/iptime_a6ns-m
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16128k
   UIMAGE_NAME := a6nm
   DEVICE_VENDOR := ipTIME
@@ -553,6 +590,7 @@ endef
 TARGET_DEVICES += iptime_a6ns-m
 
 define Device/iptime_a8004t
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16128k
   UIMAGE_NAME := a8004t
   DEVICE_VENDOR := ipTIME
@@ -562,6 +600,7 @@ endef
 TARGET_DEVICES += iptime_a8004t
 
 define Device/jcg_jhr-ac876m
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | jcg-header 89.1
@@ -574,6 +613,7 @@ endef
 TARGET_DEVICES += jcg_jhr-ac876m
 
 define Device/lenovo_newifi-d1
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := Newifi
@@ -585,6 +625,7 @@ endef
 TARGET_DEVICES += lenovo_newifi-d1
 
 define Device/linksys_ea7xxx
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -617,6 +658,7 @@ endef
 TARGET_DEVICES += linksys_ea7500-v2
 
 define Device/linksys_re6500
+  $(Device/dsa-migration)
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := Linksys
   DEVICE_MODEL := RE6500
@@ -626,6 +668,7 @@ endef
 TARGET_DEVICES += linksys_re6500
 
 define Device/mediatek_ap-mt7621a-v60
+  $(Device/dsa-migration)
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := Mediatek
   DEVICE_MODEL := AP-MT7621A-V60 EVB
@@ -634,6 +677,7 @@ endef
 TARGET_DEVICES += mediatek_ap-mt7621a-v60
 
 define Device/mediatek_mt7621-eval-board
+  $(Device/dsa-migration)
   BLOCKSIZE := 64k
   IMAGE_SIZE := 15104k
   DEVICE_VENDOR := MediaTek
@@ -644,6 +688,7 @@ endef
 TARGET_DEVICES += mediatek_mt7621-eval-board
 
 define Device/MikroTik
+  $(Device/dsa-migration)
   DEVICE_VENDOR := MikroTik
   BLOCKSIZE := 64k
   IMAGE_SIZE := 16128k
@@ -658,10 +703,17 @@ endef
 define Device/mikrotik_routerboard-750gr3
   $(Device/MikroTik)
   DEVICE_MODEL := RouterBOARD 750Gr3
-  DEVICE_PACKAGES += kmod-gpio-beeper -wpad-basic
+  DEVICE_PACKAGES += -wpad-basic
   SUPPORTED_DEVICES += mikrotik,rb750gr3
 endef
 TARGET_DEVICES += mikrotik_routerboard-750gr3
+
+define Device/mikrotik_routerboard-760igs
+  $(Device/MikroTik)
+  DEVICE_MODEL := RouterBOARD 760iGS
+  DEVICE_PACKAGES += kmod-sfp -wpad-basic
+endef
+TARGET_DEVICES += mikrotik_routerboard-760igs
 
 define Device/mikrotik_routerboard-m11g
   $(Device/MikroTik)
@@ -680,6 +732,7 @@ endef
 TARGET_DEVICES += mikrotik_routerboard-m33g
 
 define Device/mqmaker_witi
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := MQmaker
   DEVICE_MODEL := WiTi
@@ -690,6 +743,7 @@ endef
 TARGET_DEVICES += mqmaker_witi
 
 define Device/mtc_wr1201
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := MTC
   DEVICE_MODEL := Wireless Router WR1201
@@ -700,6 +754,7 @@ endef
 TARGET_DEVICES += mtc_wr1201
 
 define Device/netgear_ex6150
+  $(Device/dsa-migration)
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := EX6150
   DEVICE_PACKAGES := kmod-mt76x2
@@ -711,6 +766,7 @@ endef
 TARGET_DEVICES += netgear_ex6150
 
 define Device/netgear_sercomm_nand
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -833,6 +889,7 @@ endef
 TARGET_DEVICES += netgear_wac124
 
 define Device/netgear_wndr3700-v5
+  $(Device/dsa-migration)
   $(Device/netgear_sercomm_nor)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 15232k
@@ -850,6 +907,7 @@ endef
 TARGET_DEVICES += netgear_wndr3700-v5
 
 define Device/netis_wf2881
+  $(Device/dsa-migration)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   FILESYSTEMS := squashfs
@@ -869,6 +927,7 @@ endef
 TARGET_DEVICES += netis_wf2881
 
 define Device/phicomm_k2p
+  $(Device/dsa-migration)
   IMAGE_SIZE := 15744k
   DEVICE_VENDOR := Phicomm
   DEVICE_MODEL := K2P
@@ -880,6 +939,7 @@ endef
 TARGET_DEVICES += phicomm_k2p
 
 define Device/planex_vr500
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 65216k
   DEVICE_VENDOR := Planex
@@ -890,6 +950,7 @@ endef
 TARGET_DEVICES += planex_vr500
 
 define Device/samknows_whitebox-v8
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := SamKnows
   DEVICE_MODEL := Whitebox 8
@@ -900,6 +961,7 @@ endef
 TARGET_DEVICES += samknows_whitebox-v8
 
 define Device/storylink_sap-g3200u3
+  $(Device/dsa-migration)
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := STORYLiNK
   DEVICE_MODEL := SAP-G3200U3
@@ -909,6 +971,7 @@ endef
 TARGET_DEVICES += storylink_sap-g3200u3
 
 define Device/telco-electronics_x1
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Telco Electronics
   DEVICE_MODEL := X1
@@ -917,6 +980,7 @@ endef
 TARGET_DEVICES += telco-electronics_x1
 
 define Device/thunder_timecloud
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Thunder
@@ -927,6 +991,7 @@ endef
 TARGET_DEVICES += thunder_timecloud
 
 define Device/totolink_a7000r
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   UIMAGE_NAME := C8340R1C-9999
   DEVICE_VENDOR := TOTOLINK
@@ -936,6 +1001,7 @@ endef
 TARGET_DEVICES += totolink_a7000r
 
 define Device/tplink_re350-v1
+  $(Device/dsa-migration)
   $(Device/tplink-safeloader)
   DEVICE_MODEL := RE350
   DEVICE_VARIANT := v1
@@ -947,6 +1013,7 @@ endef
 TARGET_DEVICES += tplink_re350-v1
 
 define Device/tplink_re500-v1
+  $(Device/dsa-migration)
   $(Device/tplink-safeloader)
   DEVICE_MODEL := RE500
   DEVICE_VARIANT := v1
@@ -957,6 +1024,7 @@ endef
 TARGET_DEVICES += tplink_re500-v1
 
 define Device/tplink_re650-v1
+  $(Device/dsa-migration)
   $(Device/tplink-safeloader)
   DEVICE_MODEL := RE650
   DEVICE_VARIANT := v1
@@ -967,6 +1035,7 @@ endef
 TARGET_DEVICES += tplink_re650-v1
 
 define Device/ubnt_edgerouter_common
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   DEVICE_VENDOR := Ubiquiti
   IMAGE_SIZE := 256768k
@@ -994,6 +1063,7 @@ endef
 TARGET_DEVICES += ubnt_edgerouter-x-sfp
 
 define Device/ubnt_unifi-nanohd
+  $(Device/dsa-migration)
   DEVICE_VENDOR := Ubiquiti
   DEVICE_MODEL := UniFi nanoHD
   DEVICE_PACKAGES += kmod-mt7603 kmod-mt7615e kmod-mt7615-firmware
@@ -1002,6 +1072,7 @@ endef
 TARGET_DEVICES += ubnt_unifi-nanohd
 
 define Device/unielec_u7621-06-16m
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := UniElec
   DEVICE_MODEL := U7621-06
@@ -1012,6 +1083,7 @@ endef
 TARGET_DEVICES += unielec_u7621-06-16m
 
 define Device/unielec_u7621-06-64m
+  $(Device/dsa-migration)
   IMAGE_SIZE := 65216k
   DEVICE_VENDOR := UniElec
   DEVICE_MODEL := U7621-06
@@ -1022,6 +1094,7 @@ endef
 TARGET_DEVICES += unielec_u7621-06-64m
 
 define Device/wevo_11acnas
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   UIMAGE_NAME := 11AC-NAS-Router(0.0.0)
   DEVICE_VENDOR := WeVO
@@ -1033,6 +1106,7 @@ endef
 TARGET_DEVICES += wevo_11acnas
 
 define Device/wevo_w2914ns-v2
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   UIMAGE_NAME := W2914NS-V2(0.0.0)
   DEVICE_VENDOR := WeVO
@@ -1045,6 +1119,7 @@ endef
 TARGET_DEVICES += wevo_w2914ns-v2
 
 define Device/winstars_ws-wn583a6
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := Winstars
@@ -1057,6 +1132,7 @@ endef
 TARGET_DEVICES += winstars_ws-wn583a6
 
 define Device/xiaomi-ac2100
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -1079,6 +1155,7 @@ endef
 TARGET_DEVICES += xiaomi_mi-router-ac2100
 
 define Device/xiaomi_mir3g
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -1099,6 +1176,7 @@ endef
 TARGET_DEVICES += xiaomi_mir3g
 
 define Device/xiaomi_mir3g-v2
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 14848k
   DEVICE_VENDOR := Xiaomi
@@ -1112,6 +1190,7 @@ endef
 TARGET_DEVICES += xiaomi_mir3g-v2
 
 define Device/xiaomi_mir3p
+  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -1136,6 +1215,7 @@ endef
 TARGET_DEVICES += xiaomi_redmi-router-ac2100
 
 define Device/xiaoyu_xy-c5
+  $(Device/dsa-migration)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := XiaoYu
   DEVICE_MODEL := XY-C5
@@ -1144,6 +1224,7 @@ endef
 TARGET_DEVICES += xiaoyu_xy-c5
 
 define Device/xzwifi_creativebox-v1
+  $(Device/dsa-migration)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := CreativeBox
   DEVICE_MODEL := v1
@@ -1153,6 +1234,7 @@ endef
 TARGET_DEVICES += xzwifi_creativebox-v1
 
 define Device/youhua_wr1200js
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := YouHua
   DEVICE_MODEL := WR1200JS
@@ -1162,6 +1244,7 @@ endef
 TARGET_DEVICES += youhua_wr1200js
 
 define Device/youku_yk-l2
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Youku
   DEVICE_MODEL := YK-L2
@@ -1171,6 +1254,7 @@ endef
 TARGET_DEVICES += youku_yk-l2
 
 define Device/zbtlink_zbt-we1326
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WE1326
@@ -1180,6 +1264,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-we1326
 
 define Device/zbtlink_zbt-we3526
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WE3526
@@ -1189,6 +1274,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-we3526
 
 define Device/zbtlink_zbt-wg2626
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WG2626
@@ -1199,6 +1285,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-wg2626
 
 define Device/zbtlink_zbt-wg3526-16m
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WG3526
@@ -1210,6 +1297,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-wg3526-16m
 
 define Device/zbtlink_zbt-wg3526-32m
+  $(Device/dsa-migration)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WG3526
@@ -1221,6 +1309,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-wg3526-32m
 
 define Device/zio_freezio
+  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := ZIO
   DEVICE_MODEL := FREEZIO
@@ -1230,6 +1319,7 @@ endef
 TARGET_DEVICES += zio_freezio
 
 define Device/zyxel_wap6805
+  $(Device/dsa-migration)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   KERNEL_SIZE := 4096k
