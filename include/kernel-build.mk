@@ -105,7 +105,7 @@ define BuildKernel
 		xargs $(TARGET_CROSS)nm | \
 		awk '$$$$1 == "U" { print $$$$2 } ' | \
 		sort -u > $(KERNEL_BUILD_DIR)/mod_symtab.txt
-	$(TARGET_CROSS)nm -n $(LINUX_DIR)/vmlinux.o | grep ' [rR] __ksymtab' | sed -e 's,........ [rR] __ksymtab_,,' > $(KERNEL_BUILD_DIR)/kernel_symtab.txt
+	$(TARGET_CROSS)nm -n $(LINUX_DIR)/vmlinux.o | awk '/^[0-9a-f]+ [rR] __ksymtab_/ {print substr($$$$3,11)}' > $(KERNEL_BUILD_DIR)/kernel_symtab.txt
 	grep -Ff $(KERNEL_BUILD_DIR)/mod_symtab.txt $(KERNEL_BUILD_DIR)/kernel_symtab.txt > $(KERNEL_BUILD_DIR)/sym_include.txt
 	grep -Fvf $(KERNEL_BUILD_DIR)/mod_symtab.txt $(KERNEL_BUILD_DIR)/kernel_symtab.txt > $(KERNEL_BUILD_DIR)/sym_exclude.txt
 	( \
@@ -169,9 +169,7 @@ define BuildKernel
 		) \
 		YACC=$(STAGING_DIR_HOST)/bin/bison \
 		$$@
-	$(LINUX_RECONF_DIFF) $(LINUX_DIR)/.config | \
-		grep -vE '(CONFIG_CC_(HAS_ASM_GOTO|IS_GCC|IS_CLANG)|GCC_VERSION)=' \
-		> $(LINUX_RECONFIG_TARGET)
+	$(call LINUX_RECONF_DIFF,$(LINUX_DIR)/.config) > $(LINUX_RECONFIG_TARGET)
 
   install: $(LINUX_DIR)/.image
 	+$(MAKE) -C image compile install TARGET_BUILD=

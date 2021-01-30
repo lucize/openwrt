@@ -19,7 +19,6 @@ else
   SOURCE_DATE_EPOCH:=$(shell $(TOPDIR)/scripts/get_source_date_epoch.sh)
 endif
 
-HOSTCC ?= $(CC)
 export REVISION
 export SOURCE_DATE_EPOCH
 export GIT_CONFIG_PARAMETERS='core.autocrlf=false'
@@ -28,6 +27,12 @@ export MAKE_JOBSERVER=$(filter --jobserver%,$(MAKEFLAGS))
 export GNU_HOST_NAME:=$(shell $(TOPDIR)/scripts/config.guess)
 export HOST_OS:=$(shell uname)
 export HOST_ARCH:=$(shell uname -m)
+
+ifeq ($(HOST_OS),Darwin)
+  ifneq ($(filter /Applications/Xcode.app/% /Library/Developer/%,$(MAKE)),)
+    $(error Please use a newer version of GNU make. The version shipped by Apple is not supported)
+  endif
+endif
 
 # prevent perforce from messing with the patch utility
 unexport P4PORT P4USER P4CONFIG P4CLIENT
@@ -52,13 +57,6 @@ path:=$(subst $(space),:,$(path))
 export PATH:=$(path)
 
 unexport TAR_OPTIONS
-
-ifneq ($(shell $(HOSTCC) 2>&1 | grep clang),)
-  export HOSTCC_REAL?=$(HOSTCC)
-  export HOSTCC_WRAPPER:=$(TOPDIR)/scripts/clang-gcc-wrapper
-else
-  export HOSTCC_WRAPPER:=$(HOSTCC)
-endif
 
 ifeq ($(FORCE),)
   .config scripts/config/conf scripts/config/mconf: staging_dir/host/.prereq-build
@@ -91,6 +89,7 @@ prepare-tmpinfo: FORCE
 	[ tmp/.config-feeds.in -nt tmp/.packageauxvars ] || ./scripts/feeds feed_config > tmp/.config-feeds.in
 	./scripts/package-metadata.pl mk tmp/.packageinfo > tmp/.packagedeps || { rm -f tmp/.packagedeps; false; }
 	./scripts/package-metadata.pl pkgaux tmp/.packageinfo > tmp/.packageauxvars || { rm -f tmp/.packageauxvars; false; }
+	./scripts/package-metadata.pl usergroup tmp/.packageinfo > tmp/.packageusergroup || { rm -f tmp/.packageusergroup; false; }
 	touch $(TOPDIR)/tmp/.build
 
 .config: ./scripts/config/conf $(if $(CONFIG_HAVE_DOT_CONFIG),,prepare-tmpinfo)
@@ -108,7 +107,7 @@ endif
 scripts/config/%onf: CFLAGS+= -O2
 scripts/config/%onf:
 	@$(_SINGLE)$(SUBMAKE) $(if $(findstring s,$(OPENWRT_VERBOSE)),,-s) \
-		-C scripts/config $(notdir $@) CC="$(HOSTCC_WRAPPER)"
+		-C scripts/config $(notdir $@)
 
 $(eval $(call rdep,scripts/config,scripts/config/mconf))
 
@@ -262,8 +261,8 @@ package/symlinks-clean:
 help:
 	cat README.md
 
-distclean: cacheclean
-	rm -rf bin build_dir .config* dl feeds key-build* logs package/feeds package/openwrt-packages staging_dir tmp
+distclean:
+	rm -rf bin build_dir .ccache .config* dl feeds key-build* logs package/feeds package/openwrt-packages staging_dir tmp
 	@$(_SINGLE)$(SUBMAKE) -C scripts/config clean
 
 ifeq ($(findstring v,$(DEBUG)),)

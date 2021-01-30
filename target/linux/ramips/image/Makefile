@@ -122,12 +122,6 @@ define Build/poray-header
 	mv $@.new $@
 endef
 
-define Build/ravpower-wd009-factory
-	mkimage -A mips -T standalone -C none -a 0x80010000 -e 0x80010000 -n "OpenWrt Bootloader" -d $(UBOOT_PATH) $@.new
-	cat $@ >> $@.new
-	@mv $@.new $@
-endef
-
 define Build/relocate-kernel
 	rm -rf $@.relocate
 	$(CP) ../../generic/image/relocate $@.relocate
@@ -152,6 +146,11 @@ define Build/sercom-seal
 		-r $(SERCOMM_HWVER) \
 		-v $(SERCOMM_SWVER) \
 		$(1)
+endef
+
+define Build/sign-dlink-ru
+	sign_dlink_ru $@ $1 $2
+	mv $@.new $@
 endef
 
 define Build/trx
@@ -188,7 +187,6 @@ define Device/Default
   DEVICE_DTS = $$(SOC)_$(1)
   IMAGES := sysupgrade.bin
   COMPILE :=
-  SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
   sysupgrade_bin := append-kernel | append-rootfs | pad-rootfs
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size
 endef

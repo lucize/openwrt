@@ -77,7 +77,7 @@ IS_PACKAGE_BUILD := $(if $(filter package/%,$(BUILD_SUBDIR)),1)
 
 OPTIMIZE_FOR_CPU=$(subst i386,i486,$(ARCH))
 
-ifeq ($(ARCH),powerpc)
+ifneq (,$(findstring $(ARCH) , aarch64 aarch64_be powerpc ))
   FPIC:=-fPIC
 else
   FPIC:=-fpic
@@ -174,8 +174,6 @@ TARGET_CFLAGS:=$(TARGET_OPTIMIZATION)$(if $(CONFIG_DEBUG), -g3) $(call qstrip,$(
 TARGET_CXXFLAGS = $(TARGET_CFLAGS)
 TARGET_ASFLAGS_DEFAULT = $(TARGET_CFLAGS)
 TARGET_ASFLAGS = $(TARGET_ASFLAGS_DEFAULT)
-TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include
-TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib -L$(STAGING_DIR)/lib
 ifneq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
 LIBGCC_S_PATH=$(realpath $(wildcard $(call qstrip,$(CONFIG_LIBGCC_ROOT_DIR))/$(call qstrip,$(CONFIG_LIBGCC_FILE_SPEC))))
 LIBGCC_S=$(if $(LIBGCC_S_PATH),-L$(dir $(LIBGCC_S_PATH)) -lgcc_s)
@@ -264,12 +262,7 @@ endif
 
 BUILD_KEY=$(TOPDIR)/key-build
 
-ifeq ($(HOST_OS),Darwin)
-  FAKEROOT_SO:=$(STAGING_DIR_HOST)/lib/libfakeroot.dylib
-else
-  FAKEROOT_SO:=$(STAGING_DIR_HOST)/lib/libfakeroot.so
-endif
-FAKEROOT:=$(STAGING_DIR_HOST)/bin/fakeroot -l $(FAKEROOT_SO) -f $(STAGING_DIR_HOST)/bin/faked
+FAKEROOT:=$(STAGING_DIR_HOST)/bin/fakeroot
 
 TARGET_CC:=$(TARGET_CROSS)gcc
 TARGET_CXX:=$(TARGET_CROSS)g++
@@ -299,6 +292,7 @@ HOSTCXX_NOCACHE:=$(HOSTCXX)
 export TARGET_CC_NOCACHE
 export TARGET_CXX_NOCACHE
 export HOSTCC_NOCACHE
+export HOSTCXX_NOCACHE
 
 ifneq ($(CONFIG_CCACHE),)
   TARGET_CC:= ccache_cc
@@ -333,7 +327,7 @@ else
     STRIP:=$(TARGET_CROSS)strip $(call qstrip,$(CONFIG_STRIP_ARGS))
   else
     ifneq ($(CONFIG_USE_SSTRIP),)
-      STRIP:=$(STAGING_DIR_HOST)/bin/sstrip
+      STRIP:=$(STAGING_DIR_HOST)/bin/sstrip $(call qstrip,$(CONFIG_SSTRIP_ARGS))
     endif
   endif
   RSTRIP= \
@@ -413,6 +407,32 @@ endef
 
 # file extension
 ext=$(word $(words $(subst ., ,$(1))),$(subst ., ,$(1)))
+
+# Count Git commits of a package
+# $(1) => if non-empty: count commits since last ": [uU]pdate to " or ": [bB]ump to " in commit message
+define commitcount
+$(shell \
+  if git log -1 >/dev/null 2>/dev/null; then \
+    if [ -n "$(1)" ]; then \
+      last_bump="$$(git log --pretty=format:'%h %s' . | \
+        grep --max-count=1 -e ': [uU]pdate to ' -e ': [bB]ump to ' | \
+        cut -f 1 -d ' ')"; \
+    fi; \
+    if [ -n "$$last_bump" ]; then \
+      echo -n $$(($$(git rev-list --count "$$last_bump..HEAD" .) + 1)); \
+    else \
+      git rev-list --count HEAD .; \
+    fi; \
+  else \
+    secs="$$(($(SOURCE_DATE_EPOCH) % 86400))"; \
+    date="$$(date --utc --date="@$(SOURCE_DATE_EPOCH)" "+%y%m%d")"; \
+    printf '%s.%05d' "$$date" "$$secs"; \
+  fi; \
+)
+endef
+
+COMMITCOUNT = $(if $(DUMP),,$(call commitcount))
+AUTORELEASE = $(if $(DUMP),,$(call commitcount,1))
 
 all:
 FORCE: ;

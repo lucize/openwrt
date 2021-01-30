@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 ARCH:=arm
 BOARD:=bcm53xx
 BOARDNAME:=Broadcom BCM47xx/53xx (ARM)
-FEATURES:=squashfs nand usb pci pcie gpio
+FEATURES:=squashfs nand usb pci pcie gpio pwm
 CPU_TYPE:=cortex-a9
 SUBTARGETS:=generic
 
@@ -27,6 +27,6 @@ KERNELNAME:=zImage dtbs
 DEFAULT_PACKAGES += swconfig nvram \
 	osafeloader oseama otrx \
 	kmod-gpio-button-hotplug \
-	kmod-leds-gpio kmod-ledtrig-default-on kmod-ledtrig-timer
+	kmod-leds-gpio
 
 $(eval $(call BuildTarget))

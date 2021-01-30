@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014 OpenWrt.org
+# Copyright (C) 2014-2021 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=umdns
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/mdnsd.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2020-07-20
-PKG_SOURCE_VERSION:=eadfa26a5cf31e27f551c37c1362983e9db37c4d
-PKG_MIRROR_HASH:=a7ea35b9078543050399cda08da49199f49e2535cb8dd957e0dc5a7ff86c32a4
+PKG_SOURCE_DATE:=2021-01-26
+PKG_SOURCE_VERSION:=78aa36b0e9808e801c527c6dc47320e593309522
+PKG_MIRROR_HASH:=241833f2bf2f3366f356703159be386862ef747d9b253af6c13555f252cc970d
 
 PKG_MAINTAINER:=John Crispin <john@phrozen.org>
 PKG_LICENSE:=LGPL-2.1

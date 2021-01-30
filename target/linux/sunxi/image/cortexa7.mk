@@ -25,8 +25,8 @@ TARGET_DEVICES += cubietech_cubietruck
 define Device/friendlyarm_nanopi-m1-plus
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi M1 Plus
-  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-leds-gpio kmod-ledtrig-heartbeat \
-	kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic-wolfssl
+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-leds-gpio kmod-brcmfmac \
+	brcmfmac-firmware-43430-sdio wpad-basic-wolfssl
   SOC := sun8i-h3
 endef
 TARGET_DEVICES += friendlyarm_nanopi-m1-plus
@@ -41,11 +41,28 @@ TARGET_DEVICES += friendlyarm_nanopi-neo
 define Device/friendlyarm_nanopi-neo-air
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi NEO Air
-  DEVICE_PACKAGES := kmod-rtc-sunxi kmod-leds-gpio kmod-ledtrig-heartbeat \
-	kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic-wolfssl
+  DEVICE_PACKAGES := kmod-rtc-sunxi kmod-leds-gpio kmod-brcmfmac \
+	brcmfmac-firmware-43430-sdio wpad-basic-wolfssl
   SOC := sun8i-h3
 endef
 TARGET_DEVICES += friendlyarm_nanopi-neo-air
+
+define Device/friendlyarm_nanopi-r1
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi R1
+  DEVICE_PACKAGES := kmod-rtc-sunxi kmod-usb-net-rtl8152 kmod-leds-gpio \
+	kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic-wolfssl
+  SOC := sun8i-h3
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r1
+
+define Device/friendlyarm_zeropi
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := ZeroPi
+  DEVICE_PACKAGES := kmod-rtc-sunxi
+  SOC := sun8i-h3
+endef
+TARGET_DEVICES += friendlyarm_zeropi
 
 define Device/lamobo_lamobo-r1
   DEVICE_VENDOR := Lamobo
@@ -63,13 +80,15 @@ define Device/lemaker_bananapi
 endef
 TARGET_DEVICES += lemaker_bananapi
 
-define Device/lemaker_bananapi-m2-ultra
-  DEVICE_VENDOR := LeMaker
+define Device/sinovoip_bananapi-m2-ultra
+  DEVICE_VENDOR := Sinovoip
   DEVICE_MODEL := Banana Pi M2 Ultra
-  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-ata-sunxi
+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-ata-sunxi kmod-brcmfmac \
+	brcmfmac-firmware-43430a0-sdio wpad-basic-wolfssl
+  SUPPORTED_DEVICES:=lemaker,bananapi-m2-ultra
   SOC := sun8i-r40
 endef
-TARGET_DEVICES += lemaker_bananapi-m2-ultra
+TARGET_DEVICES += sinovoip_bananapi-m2-ultra
 
 define Device/lemaker_bananapro
   DEVICE_VENDOR := LeMaker
@@ -87,6 +106,14 @@ define Device/linksprite_pcduino3
   SOC := sun7i-a20
 endef
 TARGET_DEVICES += linksprite_pcduino3
+
+define Device/linksprite_pcduino3-nano
+  DEVICE_VENDOR := LinkSprite
+  DEVICE_MODEL := pcDuino3 Nano
+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-ata-sunxi
+  SOC := sun7i-a20
+endef
+TARGET_DEVICES += linksprite_pcduino3-nano
 
 define Device/mele_m9
   DEVICE_VENDOR := Mele
@@ -132,8 +159,8 @@ TARGET_DEVICES += olimex_a20-olinuxino-micro
 define Device/sinovoip_bananapi-m2-plus
   DEVICE_VENDOR := Sinovoip
   DEVICE_MODEL := Banana Pi M2+
-  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-leds-gpio kmod-ledtrig-heartbeat \
-	kmod-brcmfmac brcmfmac-firmware-43430a0-sdio wpad-basic-wolfssl
+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-leds-gpio kmod-brcmfmac \
+	brcmfmac-firmware-43430a0-sdio wpad-basic-wolfssl
   SOC := sun8i-h3
 endef
 TARGET_DEVICES += sinovoip_bananapi-m2-plus

@@ -93,6 +93,7 @@ $hash_cmd or ($file_hash eq "skip") or die "Cannot find appropriate hash command
 sub download
 {
 	my $mirror = shift;
+	my $download_filename = shift;
 
 	$mirror =~ s!/$!!;
 
@@ -139,7 +140,7 @@ sub download
 			}
 		};
 	} else {
-		my @cmd = download_cmd("$mirror/$url_filename");
+		my @cmd = download_cmd("$mirror/$download_filename");
 		print STDERR "+ ".join(" ",@cmd)."\n";
 		open(FETCH_FD, '-|', @cmd) or die "Cannot launch curl or wget.\n";
 		$hash_cmd and do {
@@ -243,7 +244,7 @@ foreach my $mirror (@ARGV) {
 			push @mirrors, "ftp://ftp.riken.jp/Linux/kernel.org/$dir";
 			push @mirrors, "ftp://www.mirrorservice.org/sites/ftp.kernel.org/pub/$dir";
 		}
-    } elsif ($mirror =~ /^\@GNOME\/(.+)$/) {
+	} elsif ($mirror =~ /^\@GNOME\/(.+)$/) {
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/gnome/sources/$1";
 		push @mirrors, "http://ftp.acc.umu.se/pub/GNOME/sources/$1";
 		push @mirrors, "http://ftp.kaist.ac.kr/gnome/sources/$1";
@@ -252,21 +253,41 @@ foreach my $mirror (@ARGV) {
 		push @mirrors, "http://ftp.belnet.be/ftp.gnome.org/sources/$1";
 		push @mirrors, "ftp://ftp.cse.buffalo.edu/pub/Gnome/sources/$1";
 		push @mirrors, "ftp://ftp.nara.wide.ad.jp/pub/X11/GNOME/sources/$1";
-    }
-    else {
+	} else {
 		push @mirrors, $mirror;
 	}
 }
 
-#push @mirrors, 'https://mirror1.openwrt.org';
+push @mirrors, 'https://sources.cdn.openwrt.org';
 push @mirrors, 'https://sources.openwrt.org';
 push @mirrors, 'https://mirror2.openwrt.org/sources';
+
+if (-f "$target/$filename") {
+	$hash_cmd and do {
+		if (system("cat '$target/$filename' | $hash_cmd > '$target/$filename.hash'")) {
+			die "Failed to generate hash for $filename\n";
+		}
+
+		my $sum = `cat "$target/$filename.hash"`;
+		$sum =~ /^(\w+)\s*/ or die "Could not generate file hash\n";
+		$sum = $1;
+
+		cleanup();
+		exit 0 if $sum eq $file_hash;
+
+		die "Hash of the local file $filename does not match (file: $sum, requested: $file_hash) - deleting download.\n";
+		unlink "$target/$filename";
+	};
+}
 
 while (!-f "$target/$filename") {
 	my $mirror = shift @mirrors;
 	$mirror or die "No more mirrors to try - giving up.\n";
 
-	download($mirror);
+	download($mirror, $url_filename);
+	if (!-f "$target/$filename" && $url_filename ne $filename) {
+		download($mirror, $filename);
+	}
 }
 
 $SIG{INT} = \&cleanup;

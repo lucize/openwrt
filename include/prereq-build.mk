@@ -26,6 +26,7 @@ $(eval $(call TestHostCommand,proper-umask, \
 	Please build with umask 022 - other values produce broken packages, \
 	umask | grep -xE 0?0[012][012]))
 
+ifndef IB
 $(eval $(call SetupHostCommand,gcc, \
 	Please install the GNU C Compiler (gcc) 4.8 or later, \
 	$(CC) -dumpversion | grep -E '^(4\.[8-9]|[5-9]\.?|10\.?)', \
@@ -51,12 +52,11 @@ $(eval $(call TestHostCommand,working-g++, \
 		g++ -x c++ -o $(TMP_DIR)/a.out - -lstdc++ && \
 		$(TMP_DIR)/a.out))
 
-ifndef IB
 $(eval $(call TestHostCommand,ncurses, \
 	Please install ncurses. (Missing libncurses.so or ncurses.h), \
 	echo 'int main(int argc, char **argv) { initscr(); return 0; }' | \
 		gcc -include ncurses.h -x c -o $(TMP_DIR)/a.out - -lncurses))
-endif
+endif # IB
 
 ifeq ($(HOST_OS),Linux)
   zlib_link_flags := -Wl,-Bstatic -lz -Wl,-Bdynamic
@@ -121,7 +121,8 @@ $(eval $(call SetupHostCommand,egrep,Please install GNU 'grep', \
 $(eval $(call SetupHostCommand,getopt, \
 	Please install an extended getopt version that supports --long, \
 	gnugetopt -o t --long test -- --test | grep '^ *--test *--', \
-	getopt -o t --long test -- --test | grep '^ *--test *--'))
+	getopt -o t --long test -- --test | grep '^ *--test *--', \
+	/usr/local/opt/gnu-getopt/bin/getopt -o t --long test -- --test | grep '^ *--test *--'))
 
 $(eval $(call SetupHostCommand,stat,Cannot find a file stat utility, \
 	gnustat -c%s $(TOPDIR)/Makefile, \
@@ -144,6 +145,7 @@ $(eval $(call SetupHostCommand,perl,Please install Perl 5.x, \
 $(eval $(call CleanupPython2))
 
 $(eval $(call SetupHostCommand,python,Please install Python >= 3.5, \
+	python3.9 -V 2>&1 | grep 'Python 3', \
 	python3.8 -V 2>&1 | grep 'Python 3', \
 	python3.7 -V 2>&1 | grep 'Python 3', \
 	python3.6 -V 2>&1 | grep 'Python 3', \
@@ -151,6 +153,7 @@ $(eval $(call SetupHostCommand,python,Please install Python >= 3.5, \
 	python3 -V 2>&1 | grep -E 'Python 3\.[5-9]\.?'))
 
 $(eval $(call SetupHostCommand,python3,Please install Python >= 3.5, \
+	python3.9 -V 2>&1 | grep 'Python 3', \
 	python3.8 -V 2>&1 | grep 'Python 3', \
 	python3.7 -V 2>&1 | grep 'Python 3', \
 	python3.6 -V 2>&1 | grep 'Python 3', \
@@ -162,6 +165,9 @@ $(eval $(call SetupHostCommand,git,Please install Git (git-core) >= 1.7.12.2, \
 
 $(eval $(call SetupHostCommand,file,Please install the 'file' package, \
 	file --version 2>&1 | grep file))
+
+$(eval $(call SetupHostCommand,rsync,Please install 'rsync', \
+	rsync --version </dev/null))
 
 $(STAGING_DIR_HOST)/bin/mkhash: $(SCRIPT_DIR)/mkhash.c
 	mkdir -p $(dir $@)

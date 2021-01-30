@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bpftools
-PKG_VERSION:=5.8.3
+PKG_VERSION:=5.10.10
 PKG_RELEASE:=1
 
 PKG_SOURCE:=linux-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/kernel/v5.x
-PKG_HASH:=8ea27e1ed38981f772cc6d5f16ab8dbb8052c3800ba0494bd798fbb95dcc1779
+PKG_HASH:=60ed866fa951522a5255ea37ec3ac2006d3f3427d4783a13ef478464f37cdb19
 
 PKG_MAINTAINER:=Tony Ambardar <itugrok@yahoo.com>
 
@@ -32,6 +32,7 @@ TAR_OPTIONS+= \
 	$(addprefix $(LINUX_TLD)/,$(BPF_FILES))
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/bpftool/Default
   SECTION:=net
@@ -92,6 +93,10 @@ ifneq ($(BUILD_VARIANT),lib)
   TARGET_LDFLAGS += -Wl,--gc-sections
 endif
 
+ifneq ($(INTL_FULL),)
+  TARGET_LDFLAGS += -Wl,-lintl
+endif
+
 MAKE_FLAGS += \
 	EXTRA_CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
@@ -125,9 +130,9 @@ define Build/Configure
 		$(MAKE_FLAGS) FEATURES_DUMP= $(PKG_BUILD_DIR)//libbpf/libbpf.a
 	(cd $(PKG_BUILD_DIR); cat FEATURE-DUMP.bpftool libbpf/FEATURE-DUMP.libbpf \
 		| sort | uniq > FEATURE-DUMP.openwrt)
-	$(SED) 's/feature-libbfd=[01]/feature-libbfd=$(HAVE_LIBBFD)/' \
-		-e 's/feature-libcap=[01]/feature-libcap=$(HAVE_LIBCAP)/' \
-		-e 's/feature-clang-bpf-global-var=[01]/feature-clang-bpf-global-var=$(HAVE_CLANG)/' \
+	$(SED) 's/feature-libbfd=1/feature-libbfd=$(HAVE_LIBBFD)/' \
+		-e 's/feature-libcap=1/feature-libcap=$(HAVE_LIBCAP)/' \
+		-e 's/feature-clang-bpf-global-var=1/feature-clang-bpf-global-var=$(HAVE_CLANG)/' \
 		$(PKG_BUILD_DIR)/FEATURE-DUMP.openwrt
 endef
 

@@ -6,6 +6,14 @@ include ./common-tp-link.mk
 
 DEFAULT_SOC := mt7628an
 
+define Build/ravpower-wd009-factory
+	mkimage -A mips -T standalone -C none -a 0x80010000 -e 0x80010000 \
+		-n "OpenWrt Bootloader" -d $(UBOOT_PATH) $@.new
+	cat $@ >> $@.new
+	@mv $@.new $@
+endef
+
+
 define Device/alfa-network_awusfree1
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := ALFA Network
@@ -110,6 +118,15 @@ define Device/glinet_vixmini
   SUPPORTED_DEVICES += vixmini
 endef
 TARGET_DEVICES += glinet_vixmini
+
+define Device/hak5_wifi-pineapple-mk7
+  IMAGE_SIZE := 32448k
+  DEVICE_VENDOR := Hak5
+  DEVICE_MODEL := WiFi Pineapple Mark 7
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
+  SUPPORTED_DEVICES += wifi-pineapple-mk7
+endef
+TARGET_DEVICES += hak5_wifi-pineapple-mk7
 
 define Device/hilink_hlk-7628n
   IMAGE_SIZE := 32448k
@@ -405,6 +422,16 @@ define Device/tplink_re200-v3
 endef
 TARGET_DEVICES += tplink_re200-v3
 
+define Device/tplink_re200-v4
+  $(Device/tplink-safeloader)
+  IMAGE_SIZE := 7808k
+  DEVICE_MODEL := RE200
+  DEVICE_VARIANT := v4
+  DEVICE_PACKAGES := kmod-mt76x0e
+  TPLINK_BOARD_ID := RE200-V4
+endef
+TARGET_DEVICES += tplink_re200-v4
+
 define Device/tplink_re220-v2
   $(Device/tplink-safeloader)
   IMAGE_SIZE := 7808k
@@ -454,6 +481,38 @@ define Device/tplink_tl-mr3420-v5
   IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
 endef
 TARGET_DEVICES += tplink_tl-mr3420-v5
+
+define Device/tplink_tl-mr6400-v4
+  $(Device/tplink-v2)
+  IMAGE_SIZE := 7808k
+  DEVICE_MODEL := TL-MR6400
+  DEVICE_VARIANT := v4
+  TPLINK_FLASHLAYOUT := 8Mmtk
+  TPLINK_HWID := 0x64000004
+  TPLINK_HWREV := 0x4
+  TPLINK_HWREVADD := 0x4
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport \
+	kmod-usb-serial kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi
+  IMAGES := sysupgrade.bin tftp-recovery.bin
+  IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
+endef
+TARGET_DEVICES += tplink_tl-mr6400-v4
+
+define Device/tplink_tl-mr6400-v5
+  $(Device/tplink-v2)
+  IMAGE_SIZE := 7808k
+  DEVICE_MODEL := TL-MR6400
+  DEVICE_VARIANT := v5
+  TPLINK_FLASHLAYOUT := 8Mmtk
+  TPLINK_HWID := 0x64000005
+  TPLINK_HWREV := 0x5
+  TPLINK_HWREVADD := 0x5
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport \
+	kmod-usb-serial kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi
+  IMAGES := sysupgrade.bin tftp-recovery.bin
+  IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
+endef
+TARGET_DEVICES += tplink_tl-mr6400-v5
 
 define Device/tplink_tl-wa801nd-v5
   $(Device/tplink-v2)
@@ -684,14 +743,23 @@ define Device/wrtnode_wrtnode2r
 endef
 TARGET_DEVICES += wrtnode_wrtnode2r
 
-define Device/xiaomi_mir4a-100m
+define Device/xiaomi_mi-router-4a-100m
   IMAGE_SIZE := 14976k
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router 4A
   DEVICE_VARIANT := 100M Edition
   DEVICE_PACKAGES := kmod-mt76x2
+  SUPPORTED_DEVICES += xiaomi,mir4a-100m
 endef
-TARGET_DEVICES += xiaomi_mir4a-100m
+TARGET_DEVICES += xiaomi_mi-router-4a-100m
+
+define Device/xiaomi_mi-router-4c
+  IMAGE_SIZE := 14976k
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := Mi Router 4C
+  DEVICE_PACKAGES := uboot-envtools
+endef
+TARGET_DEVICES += xiaomi_mi-router-4c
 
 define Device/xiaomi_miwifi-nano
   IMAGE_SIZE := 16064k
